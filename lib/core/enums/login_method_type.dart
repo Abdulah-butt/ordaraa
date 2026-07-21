@@ -1,0 +1,1 @@
+enum LoginMethodType { google, apple }

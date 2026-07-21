@@ -1,0 +1,31 @@
+import 'package:flutter/material.dart';
+import '../../../../core/navigation/app_navigator.dart';
+import '{{page_file_name}}';
+import '{{initial_params_file_name}}';
+
+
+
+class {{class_name}}Navigator {
+{{class_name}}Navigator(this.navigator);
+
+@override
+late BuildContext context;
+
+@override
+late AppNavigator navigator;
+
+}
+
+mixin {{class_name}}Route {
+open{{class_name}}({{class_name}}InitialParams initialParams) {
+
+    final queryString = initialParams.toQueryString();
+
+     navigator.push(context, "${ {{class_name}}Page.path}?$queryString",);
+
+}
+
+AppNavigator get navigator;
+
+BuildContext get context;
+}

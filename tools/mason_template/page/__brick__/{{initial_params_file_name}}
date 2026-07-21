@@ -1,0 +1,16 @@
+import '../../../core/navigation/route_params.dart';
+
+class {{class_name}}InitialParams extends RouteParams{
+
+const {{class_name}}InitialParams();
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {};
+  }
+
+  static {{class_name}}InitialParams fromMap(Map<String, dynamic> map) {
+    return {{class_name}}InitialParams();
+  }
+
+}

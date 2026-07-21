@@ -1,0 +1,10 @@
+import '{{initial_params_file_name}}';
+
+class {{class_name}}State {
+final bool loading;
+const {{class_name}}State({required this.loading});
+
+factory {{class_name}}State.initial() => const {{class_name}}State(loading: false);
+
+{{class_name}}State copyWith({bool? loading}) => {{class_name}}State(loading: loading??this.loading);
+}

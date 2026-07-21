@@ -1,0 +1,154 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/extensions/theme_extension.dart';
+import '../../../../core/theme/app_spacing.dart';
+import '../../../widgets/custom_app_bar.dart';
+import '../../../widgets/custom_button.dart';
+import '../../../widgets/custom_drop_down.dart';
+import '../../../widgets/custom_textfield.dart';
+import '../widgets/verified_phone_card.dart';
+import 'buyer_registration_cubit.dart';
+import 'buyer_registration_initial_params.dart';
+import 'buyer_registration_state.dart';
+
+class BuyerRegistrationPage extends StatefulWidget {
+  const BuyerRegistrationPage({
+    super.key,
+    required this.cubit,
+    required this.initialParams,
+  });
+
+  static const path = '/buyer-registration';
+  final BuyerRegistrationCubit cubit;
+  final BuyerRegistrationInitialParams initialParams;
+
+  @override
+  State<BuyerRegistrationPage> createState() => _BuyerRegistrationPageState();
+}
+
+class _BuyerRegistrationPageState extends State<BuyerRegistrationPage> {
+  BuyerRegistrationCubit get cubit => widget.cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    cubit.navigator.context = context;
+    cubit.onInit(widget.initialParams);
+  }
+
+  @override
+  void dispose() {
+    cubit.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BuyerRegistrationCubit, BuyerRegistrationState>(
+      bloc: cubit,
+      builder: (context, state) {
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          backgroundColor: context.colorTheme.surface,
+          body: SafeArea(
+            minimum: const EdgeInsets.only(top: 20, bottom: AppSpacing.lg),
+            child: Padding(
+              padding: AppSpacing.pageCompact,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CustomAppBar(
+                    title: 'Business details',
+                    onBack: cubit.navigator.goBack,
+                  ),
+                  const SizedBox(height: 14),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Tell us about your business',
+                            style: context.textTheme.headlineMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Only these details are needed to start ordering.',
+                            style: context.textTheme.bodyMedium,
+                          ),
+                          const SizedBox(height: 14),
+                          CustomTextField(
+                            label: 'Business name',
+                            controller: cubit.businessNameController,
+                            height: 48,
+                            bottomPadding: 0,
+                            borderRadius: 10,
+                            borderColor: context.colorTheme.outline,
+                            fillColor: context.colorTheme.surface,
+                            labelSpacing: 6,
+                            labelStyle: context.textTheme.labelMedium?.copyWith(
+                              color: context.colorTheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          CustomDropdown<String>(
+                            label: 'Market',
+                            value: state.market,
+                            items: const ['Australia', 'New Zealand'],
+                            itemLabelBuilder: (value) => value,
+                            onChanged: cubit.setMarket,
+                            height: 48,
+                            borderRadius: 10,
+                            borderColor: context.colorTheme.outline,
+                            fillColor: context.colorTheme.surface,
+                            labelSpacing: 6,
+                            labelStyle: context.textTheme.labelMedium?.copyWith(
+                              color: context.colorTheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          CustomTextField(
+                            label: 'Delivery address',
+                            controller: cubit.addressController,
+                            height: 48,
+                            bottomPadding: 0,
+                            borderRadius: 10,
+                            borderColor: context.colorTheme.outline,
+                            fillColor: context.colorTheme.surface,
+                            labelSpacing: 6,
+                            labelStyle: context.textTheme.labelMedium?.copyWith(
+                              color: context.colorTheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          VerifiedPhoneCard(
+                            phoneNumber: cubit.phoneNumber,
+                            description:
+                                'Verified WhatsApp · Order updates sent here',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  CustomButton(
+                    text: 'Start ordering',
+                    onTap: cubit.startOrdering,
+                    height: 56,
+                    borderRadius: BorderRadius.circular(12),
+                    backgroundColor: context.colorTheme.primary,
+                    foregroundColor: context.colorTheme.onPrimary,
+                    textStyle: context.textTheme.labelLarge?.copyWith(
+                      color: context.colorTheme.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

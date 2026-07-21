@@ -1,0 +1,45 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '{{cubit_file_name}}';
+import '{{initial_params_file_name}}';
+import '{{state_file_name}}';
+
+class {{class_name}}Page extends StatefulWidget {
+final {{class_name}}Cubit cubit;
+ final {{class_name}}InitialParams initialParams;
+
+  static const path ='/{{path}}';
+const {{class_name}}Page({
+Key? key,
+required this.cubit,
+required this.initialParams,
+}) : super(key: key);
+
+@override
+State<{{class_name}}Page> createState() => _{{class_name}}State();
+}
+
+class _{{class_name}}State extends State<{{class_name}}Page> {
+
+ {{class_name}}Cubit get cubit => widget.cubit;
+
+@override
+void initState() {
+super.initState();
+cubit.navigator.context=context;
+cubit.onInit(widget.initialParams);
+}
+
+@override
+Widget build(BuildContext context) {
+    return BlocBuilder<{{class_name}}Cubit, {{class_name}}State>(
+      bloc: cubit,
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(),
+          body: const Center(child: Text("This is {{class_name}} page"),),
+        );
+      },
+    );
+}
+}
