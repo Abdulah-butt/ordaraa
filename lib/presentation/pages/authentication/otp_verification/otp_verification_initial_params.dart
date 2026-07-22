@@ -18,7 +18,7 @@ class OtpVerificationInitialParams extends RouteParams {
 
   static OtpVerificationInitialParams fromMap(Map<String, dynamic> map) {
     return OtpVerificationInitialParams(
-      phoneNumber: map['phoneNumber'] ?? '+61 412 345 678',
+      phoneNumber: map['phoneNumber'] ?? '',
       role: UserRole.values.firstWhere(
         (role) => role.name == map['role'],
         orElse: () => UserRole.buyer,

@@ -60,7 +60,7 @@ class PhoneLoginContent extends StatelessWidget {
                       asFormField: true,
                       bottomPadding: 0,
                       initialCountryCode: 'AU',
-                      initialPhoneNumber: '+61 412 345 678',
+                      initialPhoneNumber: '',
                       onChange: cubit.onPhoneChanged,
                     ),
                     const SizedBox(height: 18),

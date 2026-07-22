@@ -1,13 +1,35 @@
-class BuyerRegistrationState {
-  const BuyerRegistrationState({required this.market});
+import '../../../../domain/entities/market.dart';
 
-  final String market;
+class BuyerRegistrationState {
+  const BuyerRegistrationState({
+    required this.selectedMarket,
+    required this.loadingMarkets,
+    required this.submitting,
+  });
+
+  final Market? selectedMarket;
+  final bool loadingMarkets;
+  final bool submitting;
 
   factory BuyerRegistrationState.initial() {
-    return const BuyerRegistrationState(market: 'Australia');
+    return const BuyerRegistrationState(
+      selectedMarket: null,
+      loadingMarkets: false,
+      submitting: false,
+    );
   }
 
-  BuyerRegistrationState copyWith({String? market}) {
-    return BuyerRegistrationState(market: market ?? this.market);
+  BuyerRegistrationState copyWith({
+    Market? Function()? selectedMarket,
+    bool? loadingMarkets,
+    bool? submitting,
+  }) {
+    return BuyerRegistrationState(
+      selectedMarket: selectedMarket == null
+          ? this.selectedMarket
+          : selectedMarket(),
+      loadingMarkets: loadingMarkets ?? this.loadingMarkets,
+      submitting: submitting ?? this.submitting,
+    );
   }
 }

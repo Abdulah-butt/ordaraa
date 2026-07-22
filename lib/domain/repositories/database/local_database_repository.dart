@@ -1,10 +1,9 @@
-abstract class LocalDatabaseRepository{
+abstract class LocalDatabaseRepository {
   Future<void> initialize();
-  Future<void> saveAccessToken(String token);
-  Future<void> saveRefreshToken(String token);
-  Future<String> getAccessToken();
-  Future<String> getRefreshToken();
-  Future<void> logoutUser();
 
+  Future<void> saveSelectedOrganizationId(String organizationId);
 
+  Future<String?> getSelectedOrganizationId();
+
+  Future<void> clearSelectedOrganizationId();
 }

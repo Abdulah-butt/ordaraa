@@ -1,24 +1,25 @@
-import '../entities/app_user.dart';
-import '../repositories/database/local_database_repository.dart';
+import 'package:ordaraa/domain/entities/auth_result.dart';
+
 import '../repositories/database/remote_database_repository.dart';
 import '../stores/user_store.dart';
+import '../../services/secure_storage/secure_storage_service.dart';
 
 class UserLoginSessionUseCase {
   final RemoteDatabaseRepository _remoteDatabaseRepository;
-  final LocalDatabaseRepository _localDatabaseRepository;
+  final SecureStorageService _secureStorageService;
   final UserStore _userStore;
 
   UserLoginSessionUseCase(
     this._remoteDatabaseRepository,
-    this._localDatabaseRepository,
+    this._secureStorageService,
     this._userStore,
   );
 
   Future<bool> execute() async {
-    String token = await _localDatabaseRepository.getAccessToken();
+    String token = await _secureStorageService.getAccessToken();
     if (token.isEmpty) return false;
-    AppUser user = await _remoteDatabaseRepository.getUserProfile();
-    _userStore.updateUser(user);
+    AuthResult result = await _remoteDatabaseRepository.getUserProfile();
+    _userStore.updateAuthUser(result);
     return true;
   }
 }

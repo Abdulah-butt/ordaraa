@@ -6,10 +6,15 @@ import '../data/repositories/database/remote_database_imp.dart';
 import '../domain/repositories/database/local_database_repository.dart';
 import '../domain/repositories/database/remote_database_repository.dart';
 import '../domain/stores/user_store.dart';
+import '../domain/stores/category_store.dart';
+import '../domain/stores/market_store.dart';
 import '../domain/usecases/login_use_case.dart';
 import '../domain/usecases/logout_use_case.dart';
+import '../domain/usecases/request_phone_otp_use_case.dart';
+import '../domain/usecases/register_buyer_organization_use_case.dart';
 import '../domain/usecases/signup_use_case.dart';
 import '../domain/usecases/user_login_session_use_case.dart';
+import '../domain/usecases/verify_phone_otp_use_case.dart';
 import '../network/dio/dio_network_repository.dart';
 import '../network/network_repository.dart';
 import 'app_cubits.dart';
@@ -18,7 +23,7 @@ import 'app_services.dart';
 final getIt = GetIt.instance;
 
 class ServiceLocator {
-  static initialize() async {
+  static Future<void> initialize() async {
     getIt.registerSingleton<AppSnackBar>(AppSnackBar());
     getIt.registerSingleton<AppNavigator>(AppNavigator());
 
@@ -33,38 +38,45 @@ class ServiceLocator {
     await getIt
         .registerSingleton<LocalDatabaseRepository>(HiveDatabaseImp())
         .initialize();
-    getIt.registerSingleton<NetworkRepository>(DioNetworkRepository(getIt()));
+    getIt.registerSingleton<NetworkRepository>(
+      DioNetworkRepository(getIt(), getIt()),
+    );
     getIt.registerSingleton<RemoteDatabaseRepository>(
-        RemoteDatabaseImp(getIt()));
+      RemoteDatabaseImp(getIt()),
+    );
 
     /// stores
     ///
     ///
     getIt.registerSingleton<UserStore>(UserStore());
+    getIt.registerSingleton<MarketStore>(MarketStore(getIt()));
+    getIt.registerSingleton<CategoryStore>(CategoryStore(getIt()));
 
     /// use_cases
     ///
     ///
     ///
     getIt.registerSingleton<LoginUseCase>(
-      LoginUseCase(
-        getIt(),
-        getIt(),
-        getIt(),
-      ),
+      LoginUseCase(getIt(), getIt(), getIt()),
     );
     getIt.registerSingleton<SignupUseCase>(
       SignupUseCase(getIt(), getIt(), getIt()),
     );
     getIt.registerSingleton<LogoutUseCase>(
-      LogoutUseCase(
-        getIt(),
-        getIt(),
-      ),
+      LogoutUseCase(getIt(), getIt(), getIt()),
     );
 
     getIt.registerSingleton<UserLoginSessionUseCase>(
       UserLoginSessionUseCase(getIt(), getIt(), getIt()),
+    );
+    getIt.registerSingleton<RequestPhoneOtpUseCase>(
+      RequestPhoneOtpUseCase(getIt()),
+    );
+    getIt.registerSingleton<RegisterBuyerOrganizationUseCase>(
+      RegisterBuyerOrganizationUseCase(getIt(), getIt(), getIt()),
+    );
+    getIt.registerSingleton<VerifyPhoneOtpUseCase>(
+      VerifyPhoneOtpUseCase(getIt(), getIt(), getIt(), getIt()),
     );
     await AppCubits.initialize();
   }

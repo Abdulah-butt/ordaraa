@@ -5,12 +5,10 @@ import '../../../../core/extensions/theme_extension.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/custom_button.dart';
-import '../../../widgets/custom_drop_down.dart';
-import '../../../widgets/custom_textfield.dart';
-import '../widgets/verified_phone_card.dart';
 import 'buyer_registration_cubit.dart';
 import 'buyer_registration_initial_params.dart';
 import 'buyer_registration_state.dart';
+import 'widgets/buyer_business_details_form.dart';
 
 class BuyerRegistrationPage extends StatefulWidget {
   const BuyerRegistrationPage({
@@ -65,69 +63,9 @@ class _BuyerRegistrationPageState extends State<BuyerRegistrationPage> {
                   const SizedBox(height: 14),
                   Expanded(
                     child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            'Tell us about your business',
-                            style: context.textTheme.headlineMedium,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Only these details are needed to start ordering.',
-                            style: context.textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: 14),
-                          CustomTextField(
-                            label: 'Business name',
-                            controller: cubit.businessNameController,
-                            height: 48,
-                            bottomPadding: 0,
-                            borderRadius: 10,
-                            borderColor: context.colorTheme.outline,
-                            fillColor: context.colorTheme.surface,
-                            labelSpacing: 6,
-                            labelStyle: context.textTheme.labelMedium?.copyWith(
-                              color: context.colorTheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          CustomDropdown<String>(
-                            label: 'Market',
-                            value: state.market,
-                            items: const ['Australia', 'New Zealand'],
-                            itemLabelBuilder: (value) => value,
-                            onChanged: cubit.setMarket,
-                            height: 48,
-                            borderRadius: 10,
-                            borderColor: context.colorTheme.outline,
-                            fillColor: context.colorTheme.surface,
-                            labelSpacing: 6,
-                            labelStyle: context.textTheme.labelMedium?.copyWith(
-                              color: context.colorTheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          CustomTextField(
-                            label: 'Delivery address',
-                            controller: cubit.addressController,
-                            height: 48,
-                            bottomPadding: 0,
-                            borderRadius: 10,
-                            borderColor: context.colorTheme.outline,
-                            fillColor: context.colorTheme.surface,
-                            labelSpacing: 6,
-                            labelStyle: context.textTheme.labelMedium?.copyWith(
-                              color: context.colorTheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          VerifiedPhoneCard(
-                            phoneNumber: cubit.phoneNumber,
-                            description:
-                                'Verified WhatsApp · Order updates sent here',
-                          ),
-                        ],
+                      child: BuyerBusinessDetailsForm(
+                        cubit: cubit,
+                        state: state,
                       ),
                     ),
                   ),
@@ -135,6 +73,7 @@ class _BuyerRegistrationPageState extends State<BuyerRegistrationPage> {
                   CustomButton(
                     text: 'Start ordering',
                     onTap: cubit.startOrdering,
+                    isLoading: state.submitting,
                     height: 56,
                     borderRadius: BorderRadius.circular(12),
                     backgroundColor: context.colorTheme.primary,

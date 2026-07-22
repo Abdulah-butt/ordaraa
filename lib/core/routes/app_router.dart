@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_strategy/url_strategy.dart';
 import '../../presentation/pages/authentication/create_account/create_account_initial_params.dart';
@@ -16,10 +17,24 @@ import '../../presentation/pages/authentication/seller_registration/seller_regis
 import '../../presentation/pages/authentication/seller_registration/seller_registration_page.dart';
 import '../../presentation/pages/choose_role/choose_role_initial_params.dart';
 import '../../presentation/pages/choose_role/choose_role_page.dart';
+import '../../presentation/pages/buyer/account/buyer_account_initial_params.dart';
+import '../../presentation/pages/buyer/account/buyer_account_page.dart';
+import '../../presentation/pages/buyer/bottom_navigation/buyer_bottom_navigation.dart';
+import '../../presentation/pages/buyer/categories/buyer_categories_initial_params.dart';
+import '../../presentation/pages/buyer/categories/buyer_categories_page.dart';
+import '../../presentation/pages/buyer/home/buyer_home_initial_params.dart';
+import '../../presentation/pages/buyer/home/buyer_home_page.dart';
+import '../../presentation/pages/buyer/orders/buyer_orders_initial_params.dart';
+import '../../presentation/pages/buyer/orders/buyer_orders_page.dart';
+import '../../presentation/pages/buyer/search/buyer_search_initial_params.dart';
+import '../../presentation/pages/buyer/search/buyer_search_page.dart';
 import '../../presentation/pages/splash/splash_initial_params.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../service_locator/service_locator.dart';
 import '../navigation/app_navigator.dart';
+
+final GlobalKey<NavigatorState> _buyerShellNavigator =
+    GlobalKey<NavigatorState>(debugLabel: 'buyer_shell');
 
 class AppRouter {
   static void initialize() {
@@ -129,6 +144,69 @@ class AppRouter {
             ),
           );
         },
+      ),
+      ShellRoute(
+        navigatorKey: _buyerShellNavigator,
+        builder: (context, state, child) {
+          return BuyerBottomNavigation(child: child);
+        },
+        routes: [
+          GoRoute(
+            path: BuyerHomePage.path,
+            builder: (context, state) {
+              return BuyerHomePage(
+                cubit: getIt(),
+                initialParams: BuyerHomeInitialParams.fromMap(
+                  state.uri.queryParameters,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: BuyerCategoriesPage.path,
+            builder: (context, state) {
+              return BuyerCategoriesPage(
+                cubit: getIt(),
+                initialParams: BuyerCategoriesInitialParams.fromMap(
+                  state.uri.queryParameters,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: BuyerSearchPage.path,
+            builder: (context, state) {
+              return BuyerSearchPage(
+                cubit: getIt(),
+                initialParams: BuyerSearchInitialParams.fromMap(
+                  state.uri.queryParameters,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: BuyerOrdersPage.path,
+            builder: (context, state) {
+              return BuyerOrdersPage(
+                cubit: getIt(),
+                initialParams: BuyerOrdersInitialParams.fromMap(
+                  state.uri.queryParameters,
+                ),
+              );
+            },
+          ),
+          GoRoute(
+            path: BuyerAccountPage.path,
+            builder: (context, state) {
+              return BuyerAccountPage(
+                cubit: getIt(),
+                initialParams: BuyerAccountInitialParams.fromMap(
+                  state.uri.queryParameters,
+                ),
+              );
+            },
+          ),
+        ],
       ),
     ],
   );

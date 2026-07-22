@@ -1,15 +1,32 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ordaraa/domain/entities/auth_result.dart';
+import 'package:ordaraa/domain/entities/organization_membership.dart';
+import 'package:ordaraa/domain/entities/user.dart';
 
-import '../entities/app_user.dart';
+class UserStore extends Cubit<AuthResult> {
+  UserStore() : super(AuthResult.guest());
 
-class UserStore extends Cubit<AppUser> {
-  UserStore() : super(AppUser.guest());
-
-  updateUser(AppUser user) {
-    emit(user);
+  void updateAuthUser(AuthResult result) {
+    emit(result);
   }
 
-  logoutUser() {
-    emit(AppUser.guest());
+  void updateUser(User? user) {
+    emit(state.copyWith(user: user));
+  }
+
+  void addOrganizationMembership(
+    OrganizationMembership organizationMembership,
+  ) {
+    final memberships = [
+      ...state.memberships.where(
+        (item) => item.membership.id != organizationMembership.membership.id,
+      ),
+      organizationMembership,
+    ];
+    emit(state.copyWith(memberships: memberships));
+  }
+
+  void logoutUser() {
+    emit(AuthResult.guest());
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../../core/navigation/app_navigator.dart';
+import '../buyer/home/buyer_home_navigator.dart';
 import '../choose_role/choose_role_navigator.dart';
 import 'splash_page.dart';
 import 'splash_initial_params.dart';
 
-class SplashNavigator with ChooseRoleRoute {
+class SplashNavigator with ChooseRoleRoute, BuyerHomeRoute {
   SplashNavigator(this.navigator);
 
   @override

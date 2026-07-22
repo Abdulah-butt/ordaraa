@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../../../../core/extensions/theme_extension.dart';
 import '../../../../../core/utils/assets.dart';
+import '../../../../../domain/entities/market.dart';
 import '../../../../widgets/custom_drop_down.dart';
 import '../../../../widgets/custom_textfield.dart';
 import '../seller_registration_cubit.dart';
@@ -89,11 +90,15 @@ class SellerBusinessDetailsStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 18),
-        CustomDropdown<String>(
+        CustomDropdown<Market>(
           label: 'Market',
-          value: state.market,
-          items: const ['Australia', 'New Zealand'],
-          itemLabelBuilder: (value) => value,
+          value: state.selectedMarket,
+          items: cubit.markets,
+          hintText: state.loadingMarkets
+              ? 'Loading markets...'
+              : 'Select market',
+          disable: state.loadingMarkets,
+          itemLabelBuilder: (market) => market.name,
           onChanged: cubit.setMarket,
           height: 48,
           borderRadius: 10,

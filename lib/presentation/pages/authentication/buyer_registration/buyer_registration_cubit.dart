@@ -2,40 +2,109 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/alert/app_snack_bar.dart';
+import '../../../../core/enums/address_type.dart';
+import '../../../../domain/entities/market.dart';
+import '../../../../domain/stores/market_store.dart';
+import '../../../../domain/usecases/register_buyer_organization_use_case.dart';
+import '../../../../network/request_model/organization_registration_request.dart';
+import '../../../../network/request_model/registration_address_request.dart';
 import 'buyer_registration_initial_params.dart';
 import 'buyer_registration_navigator.dart';
 import 'buyer_registration_state.dart';
 
 class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
-  BuyerRegistrationCubit({required this.navigator, required this.snackBar})
-    : super(BuyerRegistrationState.initial());
+  BuyerRegistrationCubit({
+    required this.navigator,
+    required this.snackBar,
+    required this.marketStore,
+    required this.registerBuyerOrganizationUseCase,
+  }) : super(BuyerRegistrationState.initial());
 
   final BuyerRegistrationNavigator navigator;
   final AppSnackBar snackBar;
-  final businessNameController = TextEditingController(
-    text: 'Harbour Fresh Market',
-  );
-  final addressController = TextEditingController(
-    text: '24 Harbour Street, Sydney NSW 2000',
-  );
-  String phoneNumber = '+61 412 345 678';
+  final MarketStore marketStore;
+  final RegisterBuyerOrganizationUseCase registerBuyerOrganizationUseCase;
+  final businessNameController = TextEditingController();
+  final addressLine1Controller = TextEditingController();
+  final cityController = TextEditingController();
+  final stateController = TextEditingController();
+  final postalCodeController = TextEditingController();
+  String phoneNumber = '';
 
-  void onInit(BuyerRegistrationInitialParams initialParams) {
+  List<Market> get markets => marketStore.state;
+
+  Future<void> onInit(BuyerRegistrationInitialParams initialParams) async {
     phoneNumber = initialParams.phoneNumber;
+    emit(BuyerRegistrationState.initial().copyWith(loadingMarkets: true));
+    try {
+      final availableMarkets = await marketStore.loadMarkets();
+      emit(
+        state.copyWith(
+          selectedMarket: () =>
+              availableMarkets.isEmpty ? null : availableMarkets.first,
+          loadingMarkets: false,
+        ),
+      );
+    } catch (error) {
+      emit(state.copyWith(loadingMarkets: false));
+      snackBar.error(error.toString());
+    }
   }
 
-  void setMarket(String? value) {
-    if (value != null) emit(state.copyWith(market: value));
+  void setMarket(Market? value) {
+    if (value != null) {
+      emit(state.copyWith(selectedMarket: () => value));
+    }
   }
 
-  void startOrdering() {
+  Future<void> startOrdering() async {
+    if (state.submitting) return;
+    final selectedMarket = state.selectedMarket;
     if (businessNameController.text.trim().isEmpty ||
-        addressController.text.trim().isEmpty) {
+        addressLine1Controller.text.trim().isEmpty ||
+        cityController.text.trim().isEmpty ||
+        selectedMarket == null) {
       snackBar.error('Complete your business details');
       return;
     }
-    snackBar.success('Business setup complete');
+
+    emit(state.copyWith(submitting: true));
+    try {
+      await registerBuyerOrganizationUseCase.execute(
+        request: OrganizationRegistrationRequest(
+          name: businessNameController.text.trim(),
+          marketId: selectedMarket.id,
+          contactPhone: phoneNumber.isEmpty ? null : phoneNumber,
+          address: RegistrationAddressRequest(
+            type: AddressType.delivery,
+            line1: addressLine1Controller.text.trim(),
+            city: cityController.text.trim(),
+            countryCode: selectedMarket.countryCode,
+            state: _optionalValue(stateController),
+            postalCode: _optionalValue(postalCodeController),
+            contactPhone: phoneNumber.isEmpty ? null : phoneNumber,
+          ),
+        ),
+      );
+      snackBar.success('Business setup complete');
+    } catch (error) {
+      snackBar.error(error.toString());
+    } finally {
+      emit(state.copyWith(submitting: false));
+    }
   }
 
-  void dispose() {}
+  String? _optionalValue(TextEditingController controller) {
+    final value = controller.text.trim();
+    return value.isEmpty ? null : value;
+  }
+
+  void dispose() {
+    businessNameController.clear();
+    addressLine1Controller.clear();
+    cityController.clear();
+    stateController.clear();
+    postalCodeController.clear();
+    phoneNumber = '';
+  }
 }

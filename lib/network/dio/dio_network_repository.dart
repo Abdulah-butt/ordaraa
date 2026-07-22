@@ -6,37 +6,40 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
-import 'package:path/path.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import '../../core/utils/constants.dart';
 import '../../domain/repositories/database/local_database_repository.dart';
+import '../../services/secure_storage/secure_storage_service.dart';
 import '../api_status.dart';
 import '../file_field.dart';
 import '../interceptors/auth_interceptor.dart';
+import '../interceptors/organization_interceptor.dart';
 import '../network_repository.dart';
-import 'api_response.dart';
 
 class DioNetworkRepository implements NetworkRepository {
+  final SecureStorageService _secureStorageService;
   final LocalDatabaseRepository _localDatabaseRepository;
 
-  DioNetworkRepository(this._localDatabaseRepository) {
+  DioNetworkRepository(
+    this._secureStorageService,
+    this._localDatabaseRepository,
+  ) {
     _initialize();
   }
 
-  var dio = Dio(BaseOptions(
-    baseUrl: "http://localhost:3000",
-    receiveDataWhenStatusError: true,
-    connectTimeout: const Duration(seconds: 60),
-    receiveTimeout: const Duration(seconds: 60),
-  ));
+  var dio = Dio(
+    BaseOptions(
+      baseUrl: "http://localhost:3000",
+      receiveDataWhenStatusError: true,
+      connectTimeout: const Duration(seconds: 60),
+      receiveTimeout: const Duration(seconds: 60),
+    ),
+  );
 
-  _initialize() {
+  void _initialize() {
     final cookieJar = CookieJar();
     dio.interceptors.add(CookieManager(cookieJar));
-    dio.interceptors.add(AuthInterceptor(
-      _localDatabaseRepository,
-      dio,
-    ));
+    dio.interceptors.add(AuthInterceptor(_secureStorageService, dio));
+    dio.interceptors.add(OrganizationInterceptor(_localDatabaseRepository));
     dio.interceptors.add(
       PrettyDioLogger(
         requestHeader: true,
@@ -69,10 +72,7 @@ class DioNetworkRepository implements NetworkRepository {
       // Prepare headers
       var headers = isFormData
           ? {'Content-Type': 'multipart/form-data'}
-          : {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              'Accept': 'application/json',
-            };
+          : {'Content-Type': 'application/json', 'Accept': 'application/json'};
 
       // Convert method enum to string
       final method = _getMethodString(mode);
@@ -142,7 +142,8 @@ class DioNetworkRepository implements NetworkRepository {
   }
 
   Future<Map<String, MultipartFile>> _getFileFields(
-      List<FileField> fileFields) async {
+    List<FileField> fileFields,
+  ) async {
     final Map<String, MultipartFile> mediaFields = {};
 
     for (var fileField in fileFields) {
@@ -162,7 +163,7 @@ class DioNetworkRepository implements NetworkRepository {
     return mediaFields;
   }
 
-  _handleException(DioException exception) {
+  Never _handleException(DioException exception) {
     debugPrint("status code : ${exception.response?.statusCode}");
     if (exception.type == DioExceptionType.connectionError) {
       throw ApiStatuses.INTERNET_CONNECTION_PROBLEM;
@@ -173,9 +174,8 @@ class DioNetworkRepository implements NetworkRepository {
   Map<String, dynamic> _removeNullAndEmptyValues(
     Map<String, dynamic> inputMap,
   ) {
-    return Map.from(inputMap)
-      ..removeWhere(
-        (key, value) => value == null || (value is String && value.isEmpty),
-      );
+    return Map.from(inputMap)..removeWhere(
+      (key, value) => value == null || (value is String && value.isEmpty),
+    );
   }
 }

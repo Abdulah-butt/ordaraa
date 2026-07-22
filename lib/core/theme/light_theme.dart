@@ -64,9 +64,7 @@ ThemeData buildOrdaraLightTheme() {
     canvasColor: AppColors.lightSurface,
     textTheme: textTheme,
     visualDensity: VisualDensity.standard,
-    extensions: const <ThemeExtension<dynamic>>[
-      OrdaraThemeColors.light,
-    ],
+    extensions: const <ThemeExtension<dynamic>>[OrdaraThemeColors.light],
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.lightBackground,
       foregroundColor: AppColors.lightTextPrimary,
@@ -218,8 +216,9 @@ ThemeData buildOrdaraLightTheme() {
       backgroundColor: AppColors.lightSurface,
       indicatorColor: AppColors.brand100,
       selectedIconTheme: const IconThemeData(color: AppColors.brand700),
-      unselectedIconTheme:
-          const IconThemeData(color: AppColors.lightTextTertiary),
+      unselectedIconTheme: const IconThemeData(
+        color: AppColors.lightTextTertiary,
+      ),
       selectedLabelTextStyle: textTheme.labelMedium?.copyWith(
         color: AppColors.brand900,
         fontWeight: FontWeight.w700,
@@ -230,7 +229,7 @@ ThemeData buildOrdaraLightTheme() {
       backgroundColor: AppColors.lightSurface,
       surfaceTintColor: Colors.transparent,
       modalBackgroundColor: AppColors.lightSurface,
-      showDragHandle: true,
+      showDragHandle: false,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.sheet),
     ),
     dialogTheme: DialogThemeData(

@@ -10,7 +10,7 @@ class SellerRegistrationInitialParams extends RouteParams {
 
   static SellerRegistrationInitialParams fromMap(Map<String, dynamic> map) {
     return SellerRegistrationInitialParams(
-      phoneNumber: map['phoneNumber'] ?? '+61 412 345 678',
+      phoneNumber: map['phoneNumber'] ?? '',
     );
   }
 }

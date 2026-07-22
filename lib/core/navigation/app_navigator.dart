@@ -3,42 +3,39 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-
 class AppNavigator {
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
   static final RouteObserver<PageRoute> routeObserver =
       RouteObserver<PageRoute>();
 
-  push(
-    BuildContext context,
-    String path,
-  ) {
-    context.push(path);
+  Future<T?> push<T extends Object?>(BuildContext context, String path) {
+    return context.push<T>(path);
   }
 
-  replace(BuildContext context, String path) {
+  void replace(BuildContext context, String path) {
     context.replace(path);
   }
 
-  pushAndClearAllPrevious(BuildContext context, String path) {
+  void pushAndClearAllPrevious(BuildContext context, String path) {
     while (context.canPop() == true) {
       context.pop();
     }
     context.pushReplacement(path);
   }
 
-  showBottomSheet(
+  Future<T?> showBottomSheet<T>(
     BuildContext context,
     Widget page, {
     bool fullSheet = false,
     double? padding,
   }) {
-    showModalBottomSheet(
+    return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
       enableDrag: !fullSheet,
       isDismissible: !fullSheet,
+      showDragHandle: !fullSheet,
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: fullSheet
           ? null
@@ -65,14 +62,14 @@ class AppNavigator {
     );
   }
 
-  pop(BuildContext context) {
+  void pop(BuildContext context) {
     if (context.canPop()) {
       context.pop();
     }
   }
 
-  showDialogBox(BuildContext context, Widget page) {
-    showDialog(
+  Future<T?> showDialogBox<T>(BuildContext context, Widget page) {
+    return showDialog<T>(
       context: context,
       useSafeArea: false,
       builder: (ctx) {
@@ -83,9 +80,7 @@ class AppNavigator {
               // Blurred background
               BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 1.0, sigmaY: 1.0),
-                child: Container(
-                  color: Colors.black.withOpacity(0.1), // Add a slight tint
-                ),
+                child: Container(color: Colors.black.withValues(alpha: 0.1)),
               ),
               page,
             ],

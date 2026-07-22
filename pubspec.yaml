@@ -71,6 +71,7 @@ dependencies:
 
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  flutter_secure_storage: ^10.3.1
   elegant_notification: ^2.5.1
   upgrader: ^12.5.0
   connectivity_plus: ^7.0.0

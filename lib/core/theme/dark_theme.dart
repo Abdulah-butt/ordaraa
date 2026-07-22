@@ -60,9 +60,7 @@ ThemeData buildOrdaraDarkTheme() {
     canvasColor: AppColors.darkSurface,
     textTheme: textTheme,
     visualDensity: VisualDensity.standard,
-    extensions: const <ThemeExtension<dynamic>>[
-      OrdaraThemeColors.dark,
-    ],
+    extensions: const <ThemeExtension<dynamic>>[OrdaraThemeColors.dark],
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.darkBackground,
       foregroundColor: AppColors.darkTextPrimary,
@@ -214,8 +212,9 @@ ThemeData buildOrdaraDarkTheme() {
       backgroundColor: AppColors.darkSurface,
       indicatorColor: AppColors.brand800,
       selectedIconTheme: const IconThemeData(color: AppColors.brand500),
-      unselectedIconTheme:
-          const IconThemeData(color: AppColors.darkTextTertiary),
+      unselectedIconTheme: const IconThemeData(
+        color: AppColors.darkTextTertiary,
+      ),
       selectedLabelTextStyle: textTheme.labelMedium?.copyWith(
         color: AppColors.brand100,
         fontWeight: FontWeight.w700,
@@ -226,7 +225,7 @@ ThemeData buildOrdaraDarkTheme() {
       backgroundColor: AppColors.darkSurface,
       surfaceTintColor: Colors.transparent,
       modalBackgroundColor: AppColors.darkSurface,
-      showDragHandle: true,
+      showDragHandle: false,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.sheet),
     ),
     dialogTheme: DialogThemeData(
@@ -239,8 +238,9 @@ ThemeData buildOrdaraDarkTheme() {
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: AppColors.darkSurfaceElevated,
-      contentTextStyle:
-          textTheme.bodyMedium?.copyWith(color: AppColors.darkTextPrimary),
+      contentTextStyle: textTheme.bodyMedium?.copyWith(
+        color: AppColors.darkTextPrimary,
+      ),
       actionTextColor: AppColors.brand500,
       behavior: SnackBarBehavior.floating,
       elevation: 0,
@@ -261,8 +261,9 @@ ThemeData buildOrdaraDarkTheme() {
         color: AppColors.darkSurfaceElevated,
         borderRadius: AppRadius.chip,
       ),
-      textStyle:
-          textTheme.bodySmall?.copyWith(color: AppColors.darkTextPrimary),
+      textStyle: textTheme.bodySmall?.copyWith(
+        color: AppColors.darkTextPrimary,
+      ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: AppColors.brand500,
@@ -317,9 +318,7 @@ ThemeData buildOrdaraDarkTheme() {
         fontWeight: FontWeight.w700,
       ),
       dataTextStyle: textTheme.bodyMedium,
-      headingRowColor: const WidgetStatePropertyAll(
-        AppColors.darkSurfaceMuted,
-      ),
+      headingRowColor: const WidgetStatePropertyAll(AppColors.darkSurfaceMuted),
       dividerThickness: 1,
       decoration: const BoxDecoration(
         color: AppColors.darkSurface,

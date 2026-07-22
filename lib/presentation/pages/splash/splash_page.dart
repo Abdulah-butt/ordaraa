@@ -34,7 +34,6 @@ class _SplashState extends State<SplashPage> {
 
   @override
   void dispose() {
-    cubit.dispose();
     super.dispose();
   }
 
