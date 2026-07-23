@@ -21,7 +21,7 @@ class OrganizationProfileState extends Equatable {
   factory OrganizationProfileState.initial() => const OrganizationProfileState(
     organization: null,
     paymentTerms: null,
-    loading: false,
+    loading: true,
     saving: false,
     errorMessage: null,
   );

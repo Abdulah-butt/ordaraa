@@ -7,20 +7,18 @@ class OrganizationProfileLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AppSkeleton(
-      child: Column(
-        children: [
-          AppSkeletonBox(height: 82),
-          SizedBox(height: 16),
-          AppSkeletonBox(height: 190),
-          SizedBox(height: 16),
-          AppSkeletonBox(height: 250),
-          SizedBox(height: 16),
-          AppSkeletonBox(height: 190),
-          SizedBox(height: 16),
-          AppSkeletonBox(height: 130),
-        ],
-      ),
+    return const Column(
+      children: [
+        AppSkeletonBox(height: 82),
+        SizedBox(height: 16),
+        AppSkeletonBox(height: 190),
+        SizedBox(height: 16),
+        AppSkeletonBox(height: 250),
+        SizedBox(height: 16),
+        AppSkeletonBox(height: 190),
+        SizedBox(height: 16),
+        AppSkeletonBox(height: 130),
+      ],
     );
   }
 }

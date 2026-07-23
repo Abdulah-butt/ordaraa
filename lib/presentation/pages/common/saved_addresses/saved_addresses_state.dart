@@ -17,7 +17,7 @@ class SavedAddressesState extends Equatable {
 
   factory SavedAddressesState.initial() => const SavedAddressesState(
     addresses: [],
-    loading: false,
+    loading: true,
     refreshing: false,
     errorMessage: null,
   );

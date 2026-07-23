@@ -32,6 +32,12 @@ class OrganizationProfileCubit extends Cubit<OrganizationProfileState> {
   final contactEmailController = TextEditingController();
   final contactPhoneController = TextEditingController();
 
+  void prepareForDisplay() {
+    if (state.organization == null && !state.loading) {
+      emit(state.copyWith(loading: true, errorMessage: () => null));
+    }
+  }
+
   Future<void> onInit(OrganizationProfileInitialParams initialParams) async {
     if (state.organization != null) return;
     await _load();

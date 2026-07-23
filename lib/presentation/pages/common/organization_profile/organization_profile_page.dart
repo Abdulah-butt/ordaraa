@@ -35,7 +35,10 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
   void initState() {
     super.initState();
     cubit.navigator.context = context;
-    cubit.onInit(widget.initialParams);
+    cubit.prepareForDisplay();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) cubit.onInit(widget.initialParams);
+    });
   }
 
   @override
