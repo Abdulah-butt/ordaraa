@@ -11,6 +11,7 @@ import '../../../../network/request_model/registration_address_request.dart';
 import 'buyer_registration_initial_params.dart';
 import 'buyer_registration_navigator.dart';
 import 'buyer_registration_state.dart';
+import '../../buyer/home/buyer_home_initial_params.dart';
 
 class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
   BuyerRegistrationCubit({
@@ -87,6 +88,7 @@ class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
         ),
       );
       snackBar.success('Business setup complete');
+      navigator.openBuyerHomeAndClearStack(const BuyerHomeInitialParams());
     } catch (error) {
       snackBar.error(error.toString());
     } finally {

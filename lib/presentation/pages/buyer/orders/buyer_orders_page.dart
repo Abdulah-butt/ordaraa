@@ -5,6 +5,7 @@ import '../../../../core/extensions/theme_extension.dart';
 import 'buyer_orders_cubit.dart';
 import 'buyer_orders_initial_params.dart';
 import 'buyer_orders_state.dart';
+import 'widgets/buyer_orders_content.dart';
 
 class BuyerOrdersPage extends StatefulWidget {
   const BuyerOrdersPage({
@@ -39,8 +40,14 @@ class _BuyerOrdersPageState extends State<BuyerOrdersPage> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: context.colorTheme.surface,
-          body: Center(
-            child: Text('Orders', style: context.textTheme.titleLarge),
+          body: BuyerOrdersContent(
+            state: state,
+            scrollController: cubit.scrollController,
+            onTabSelected: cubit.selectStatus,
+            onRefresh: cubit.refresh,
+            onRetry: cubit.retryInitial,
+            onLoadMoreRetry: cubit.loadMore,
+            onOrderSelected: cubit.openOrder,
           ),
         );
       },

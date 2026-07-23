@@ -30,7 +30,7 @@ class BuyerSearchCubit extends Cubit<BuyerSearchState> {
     required this.snackBar,
   }) : super(BuyerSearchState.initial());
 
-  static const _pageSize = 10;
+  static const _limit = 10;
   static const _searchDebounce = Duration(milliseconds: 400);
 
   final BuyerSearchNavigator navigator;
@@ -162,61 +162,40 @@ class BuyerSearchCubit extends Cubit<BuyerSearchState> {
         suppliers: !productResults && !preserveExisting
             ? const []
             : state.suppliers,
-        productHasNextPage: productResults && !preserveExisting
-            ? false
-            : state.productHasNextPage,
-        productLoadedItemCount: productResults
-            ? preserveExisting
-                  ? state.productLoadedItemCount
-                  : 0
-            : state.productLoadedItemCount,
+        productHasNextPage: productResults ? false : state.productHasNextPage,
+        productNextCursor: productResults ? () => null : null,
         productTotalCount: productResults && !preserveExisting
             ? 0
             : state.productTotalCount,
-        productTotalPages: productResults && !preserveExisting
-            ? 0
-            : state.productTotalPages,
-        supplierHasNextPage: !productResults && !preserveExisting
-            ? false
-            : state.supplierHasNextPage,
-        supplierLoadedItemCount: productResults
-            ? state.supplierLoadedItemCount
-            : preserveExisting
-            ? state.supplierLoadedItemCount
-            : 0,
+        supplierHasNextPage: productResults ? state.supplierHasNextPage : false,
+        supplierNextCursor: productResults ? null : () => null,
         supplierTotalCount: !productResults && !preserveExisting
             ? 0
             : state.supplierTotalCount,
-        supplierTotalPages: !productResults && !preserveExisting
-            ? 0
-            : state.supplierTotalPages,
       ),
     );
     try {
       if (productResults) {
-        final result = await _fetchProducts(offset: 0);
+        final result = await _fetchProducts();
         if (generation != _requestGeneration) return;
         emit(
           state.copyWith(
             products: _applyAvailabilityFilter(result.items),
-            productLoadedItemCount: result.items.length,
             productHasNextPage: result.hasNextPage,
+            productNextCursor: () => result.nextCursor,
             productTotalCount: result.totalCount ?? result.items.length,
-            productTotalPages: result.totalPages ?? _fallbackTotalPages(result),
             productSignature: signature,
           ),
         );
       } else {
-        final result = await _fetchOrganizations(offset: 0);
+        final result = await _fetchOrganizations();
         if (generation != _requestGeneration) return;
         emit(
           state.copyWith(
             suppliers: result.items,
-            supplierLoadedItemCount: result.items.length,
             supplierHasNextPage: result.hasNextPage,
+            supplierNextCursor: () => result.nextCursor,
             supplierTotalCount: result.totalCount ?? result.items.length,
-            supplierTotalPages:
-                result.totalPages ?? _fallbackTotalPages(result),
             supplierSignature: signature,
           ),
         );
@@ -233,39 +212,40 @@ class BuyerSearchCubit extends Cubit<BuyerSearchState> {
   }
 
   Future<void> loadMore() async {
-    if (state.loadingResults || state.loadingMore || !state.hasNextPage) {
+    final cursor = state.nextCursor;
+    if (state.loadingResults ||
+        state.loadingMore ||
+        !state.hasNextPage ||
+        cursor == null) {
       return;
     }
     final generation = _requestGeneration;
     emit(state.copyWith(loadingMore: true));
     try {
       if (state.resultType == BuyerSearchResultType.products) {
-        final result = await _fetchProducts(offset: state.loadedItemCount);
+        final result = await _fetchProducts(cursor: cursor);
         if (generation != _requestGeneration) return;
         emit(
           state.copyWith(
-            products: [
+            products: _deduplicateProducts([
               ...state.products,
               ..._applyAvailabilityFilter(result.items),
-            ],
-            productLoadedItemCount:
-                state.productLoadedItemCount + result.items.length,
+            ]),
             productHasNextPage: result.hasNextPage,
-            productTotalCount: result.totalCount ?? state.productTotalCount,
-            productTotalPages: result.totalPages ?? state.productTotalPages,
+            productNextCursor: () => result.nextCursor,
           ),
         );
       } else {
-        final result = await _fetchOrganizations(offset: state.loadedItemCount);
+        final result = await _fetchOrganizations(cursor: cursor);
         if (generation != _requestGeneration) return;
         emit(
           state.copyWith(
-            suppliers: [...state.suppliers, ...result.items],
-            supplierLoadedItemCount:
-                state.supplierLoadedItemCount + result.items.length,
+            suppliers: _deduplicateOrganizations([
+              ...state.suppliers,
+              ...result.items,
+            ]),
             supplierHasNextPage: result.hasNextPage,
-            supplierTotalCount: result.totalCount ?? state.supplierTotalCount,
-            supplierTotalPages: result.totalPages ?? state.supplierTotalPages,
+            supplierNextCursor: () => result.nextCursor,
           ),
         );
       }
@@ -280,21 +260,14 @@ class BuyerSearchCubit extends Cubit<BuyerSearchState> {
     }
   }
 
-  Future<PaginatedResult<Organization>> _fetchOrganizations({
-    required int offset,
-  }) {
+  Future<PaginatedResult<Organization>> _fetchOrganizations({String? cursor}) {
     return getOrganizationsUseCase.execute(
       request: OrganizationListingRequest(
-        limit: _pageSize,
-        offset: offset,
+        limit: _limit,
+        cursor: cursor,
         query: searchController.text,
       ),
     );
-  }
-
-  int _fallbackTotalPages<T>(PaginatedResult<T> result) {
-    final count = result.totalCount ?? result.items.length;
-    return (count / result.limit).ceil();
   }
 
   bool get _hasValidCurrentCache {
@@ -314,12 +287,12 @@ class BuyerSearchCubit extends Cubit<BuyerSearchState> {
     return [query, state.selectedCategory, state.inStockOnly].join('|');
   }
 
-  Future<PaginatedResult<Product>> _fetchProducts({required int offset}) {
+  Future<PaginatedResult<Product>> _fetchProducts({String? cursor}) {
     final category = selectedCategory;
     return getProductListingsUseCase.execute(
       request: ProductListingRequest(
-        limit: _pageSize,
-        offset: offset,
+        limit: _limit,
+        cursor: cursor,
         query: searchController.text,
         categoryId: category == null || category.slug == 'all-products'
             ? null
@@ -333,6 +306,24 @@ class BuyerSearchCubit extends Cubit<BuyerSearchState> {
     return products
         .where((product) => product.stockStatus == StockStatus.inStock)
         .toList(growable: false);
+  }
+
+  List<Product> _deduplicateProducts(List<Product> products) {
+    final byId = <String, Product>{};
+    for (final product in products) {
+      byId.putIfAbsent(product.id, () => product);
+    }
+    return byId.values.toList(growable: false);
+  }
+
+  List<Organization> _deduplicateOrganizations(
+    List<Organization> organizations,
+  ) {
+    final byId = <String, Organization>{};
+    for (final organization in organizations) {
+      byId.putIfAbsent(organization.id, () => organization);
+    }
+    return byId.values.toList(growable: false);
   }
 
   void _onScroll() {

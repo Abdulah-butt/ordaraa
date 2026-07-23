@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/extensions/theme_extension.dart';
+import '../../../../../core/utils/constants.dart';
 import '../buyer_account_state.dart';
 import 'buyer_account_profile_card.dart';
 import 'buyer_account_section.dart';
@@ -83,7 +84,7 @@ class BuyerAccountContent extends StatelessWidget {
                 const SizedBox(height: 12),
                 const BuyerAccountSection(
                   title: 'Marketplace',
-                  items: [BuyerAccountItem(label: 'Sell on Ordara')],
+                  items: [BuyerAccountItem(label: 'Sell on $kAppName')],
                 ),
                 const SizedBox(height: 12),
                 BuyerAccountSection(

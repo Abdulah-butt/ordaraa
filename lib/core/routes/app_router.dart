@@ -24,6 +24,12 @@ import '../../presentation/pages/buyer/categories/buyer_categories_initial_param
 import '../../presentation/pages/buyer/categories/buyer_categories_page.dart';
 import '../../presentation/pages/buyer/cart/cart_initial_params.dart';
 import '../../presentation/pages/buyer/cart/cart_page.dart';
+import '../../presentation/pages/buyer/checkout/checkout_initial_params.dart';
+import '../../presentation/pages/buyer/checkout/checkout_page.dart';
+import '../../presentation/pages/buyer/order_confirmed/order_confirmed_initial_params.dart';
+import '../../presentation/pages/buyer/order_confirmed/order_confirmed_page.dart';
+import '../../presentation/pages/buyer/order_detail/order_detail_initial_params.dart';
+import '../../presentation/pages/buyer/order_detail/order_detail_page.dart';
 import '../../presentation/pages/buyer/home/buyer_home_initial_params.dart';
 import '../../presentation/pages/buyer/home/buyer_home_page.dart';
 import '../../presentation/pages/buyer/orders/buyer_orders_initial_params.dart';
@@ -201,6 +207,48 @@ class AppRouter {
             child: CartPage(
               cubit: getIt(),
               initialParams: CartInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: CheckoutPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: CheckoutPage(
+              cubit: getIt(),
+              initialParams: CheckoutInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: OrderConfirmedPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: OrderConfirmedPage(
+              cubit: getIt(),
+              initialParams: OrderConfirmedInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: OrderDetailPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: OrderDetailPage(
+              cubit: getIt(),
+              initialParams: OrderDetailInitialParams.fromMap(
                 state.uri.queryParameters,
               ),
             ),

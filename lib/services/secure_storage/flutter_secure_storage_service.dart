@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../core/enums/user_role.dart';
 import 'secure_storage_service.dart';
 
 class FlutterSecureStorageService implements SecureStorageService {
@@ -8,6 +9,7 @@ class FlutterSecureStorageService implements SecureStorageService {
 
   static const _accessTokenKey = 'access_token';
   static const _refreshTokenKey = 'refresh_token';
+  static const _intendedUserRoleKey = 'intended_user_role';
 
   final FlutterSecureStorage _storage;
 
@@ -43,10 +45,22 @@ class FlutterSecureStorageService implements SecureStorageService {
   }
 
   @override
+  Future<void> saveIntendedUserRole(UserRole role) {
+    return _storage.write(key: _intendedUserRoleKey, value: role.name);
+  }
+
+  @override
+  Future<UserRole?> getIntendedUserRole() async {
+    final value = await _storage.read(key: _intendedUserRoleKey);
+    return UserRole.values.where((role) => role.name == value).firstOrNull;
+  }
+
+  @override
   Future<void> clearAuthTokens() async {
     await Future.wait([
       _storage.delete(key: _accessTokenKey),
       _storage.delete(key: _refreshTokenKey),
+      _storage.delete(key: _intendedUserRoleKey),
     ]);
   }
 }

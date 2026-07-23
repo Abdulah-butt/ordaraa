@@ -1,4 +1,4 @@
-const String kAppName = "Dummy name";
+const String kAppName = 'Ordaraa';
 const double kScreenPadding = 16;
 const double kTextFieldHeight = 50;
 const double kTextFieldBottomPadding = 18;

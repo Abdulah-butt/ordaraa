@@ -13,11 +13,13 @@ class PhoneLoginNavigator with OtpVerificationRoute {
 
   @override
   late AppNavigator navigator;
+
+  void goBack() => navigator.pop(context);
 }
 
 mixin PhoneLoginRoute {
   void openPhoneLogin(PhoneLoginInitialParams initialParams) {
-    navigator.pushAndClearAllPrevious(
+    navigator.push(
       context,
       '${PhoneLoginPage.path}?${initialParams.toQueryString()}',
     );

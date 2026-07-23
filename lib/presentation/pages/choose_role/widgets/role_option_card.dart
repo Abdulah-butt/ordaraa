@@ -9,12 +9,14 @@ class RoleOptionCard extends StatelessWidget {
   const RoleOptionCard({
     super.key,
     required this.label,
+    required this.description,
     required this.iconAsset,
     required this.selected,
     required this.onTap,
   });
 
   final String label;
+  final String description;
   final String iconAsset;
   final bool selected;
   final VoidCallback onTap;
@@ -24,7 +26,8 @@ class RoleOptionCard extends StatelessWidget {
     return Semantics(
       button: true,
       selected: selected,
-      label: label,
+      label: '$label. $description',
+      hint: 'Double tap to continue',
       child: Material(
         color: selected
             ? context.colorTheme.primaryContainer
@@ -33,9 +36,11 @@ class RoleOptionCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(22),
-          child: Container(
-            height: 112,
-            padding: const EdgeInsets.all(18),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            curve: Curves.easeOut,
+            constraints: const BoxConstraints(minHeight: 126),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
             decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(22),
@@ -55,20 +60,73 @@ class RoleOptionCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  width: 64,
-                  height: 64,
+                  width: 82,
+                  height: 82,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: context.colorTheme.surface,
-                    shape: BoxShape.circle,
+                    color: selected
+                        ? context.colorTheme.surface
+                        : context.colorTheme.primaryContainer.withValues(
+                            alpha: 0.65,
+                          ),
+                    borderRadius: BorderRadius.circular(18),
                   ),
-                  child: SvgPicture.asset(iconAsset, width: 28, height: 28),
+                  child: Image.asset(
+                    iconAsset,
+                    width: 78,
+                    height: 78,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.medium,
+                    cacheWidth: 256,
+                    excludeFromSemantics: true,
+                  ),
                 ),
                 const SizedBox(width: AppSpacing.lg),
                 Expanded(
-                  child: Text(label, style: context.textTheme.titleLarge),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        label,
+                        style: context.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        description,
+                        style: context.textTheme.bodyMedium?.copyWith(
+                          color: context.colorTheme.onSurfaceVariant,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SvgPicture.asset(Assets.chevronRight, width: 24, height: 24),
+                const SizedBox(width: AppSpacing.sm),
+                Container(
+                  width: 36,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? context.colorTheme.primary
+                        : context.colorTheme.surfaceContainerHighest,
+                    shape: BoxShape.circle,
+                  ),
+                  child: SvgPicture.asset(
+                    Assets.chevronRight,
+                    width: 18,
+                    height: 18,
+                    colorFilter: ColorFilter.mode(
+                      selected
+                          ? context.colorTheme.onPrimary
+                          : context.colorTheme.onSurfaceVariant,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

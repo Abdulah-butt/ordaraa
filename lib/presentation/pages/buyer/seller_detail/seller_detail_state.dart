@@ -10,7 +10,7 @@ class SellerDetailState extends Equatable {
     required this.loading,
     required this.loadingMore,
     required this.hasNextPage,
-    required this.loadedItemCount,
+    required this.nextCursor,
     required this.totalCount,
     required this.errorMessage,
   });
@@ -20,7 +20,7 @@ class SellerDetailState extends Equatable {
   final bool loading;
   final bool loadingMore;
   final bool hasNextPage;
-  final int loadedItemCount;
+  final String? nextCursor;
   final int totalCount;
   final String? errorMessage;
 
@@ -30,7 +30,7 @@ class SellerDetailState extends Equatable {
     loading: false,
     loadingMore: false,
     hasNextPage: false,
-    loadedItemCount: 0,
+    nextCursor: null,
     totalCount: 0,
     errorMessage: null,
   );
@@ -41,7 +41,7 @@ class SellerDetailState extends Equatable {
     bool? loading,
     bool? loadingMore,
     bool? hasNextPage,
-    int? loadedItemCount,
+    String? Function()? nextCursor,
     int? totalCount,
     String? Function()? errorMessage,
   }) {
@@ -51,7 +51,7 @@ class SellerDetailState extends Equatable {
       loading: loading ?? this.loading,
       loadingMore: loadingMore ?? this.loadingMore,
       hasNextPage: hasNextPage ?? this.hasNextPage,
-      loadedItemCount: loadedItemCount ?? this.loadedItemCount,
+      nextCursor: nextCursor == null ? this.nextCursor : nextCursor(),
       totalCount: totalCount ?? this.totalCount,
       errorMessage: errorMessage == null ? this.errorMessage : errorMessage(),
     );
@@ -64,7 +64,7 @@ class SellerDetailState extends Equatable {
     loading,
     loadingMore,
     hasNextPage,
-    loadedItemCount,
+    nextCursor,
     totalCount,
     errorMessage,
   ];

@@ -87,6 +87,14 @@ class _CustomPhoneNumberFieldState extends State<CustomPhoneNumberField> {
             color: context.colorTheme.onSurface,
           )
         : context.textTheme.headlineLarge;
+    final countrySearchTextStyle = context.textTheme.bodyMedium?.copyWith(
+      color: context.colorTheme.onSurface,
+      height: 1.2,
+    );
+    final countrySearchBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: context.colorTheme.outline),
+    );
 
     return TapRegion(
       onTapOutside: (_) => _focusNode.unfocus(),
@@ -115,7 +123,42 @@ class _CustomPhoneNumberFieldState extends State<CustomPhoneNumberField> {
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.telephoneNumber],
               countrySelectorNavigator:
-                  const CountrySelectorNavigator.modalBottomSheet(),
+                  CountrySelectorNavigator.modalBottomSheet(
+                    backgroundColor: context.colorTheme.surface,
+                    searchBoxTextStyle: countrySearchTextStyle,
+                    searchBoxIconColor: context.colorTheme.onSurfaceVariant,
+                    searchBoxDecoration: InputDecoration(
+                      hintText: 'Search countries',
+                      hintStyle: countrySearchTextStyle?.copyWith(
+                        color: context.ordaraColors.textTertiary,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search_rounded,
+                        size: 20,
+                        color: context.colorTheme.onSurfaceVariant,
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 44,
+                        minHeight: 44,
+                      ),
+                      isDense: true,
+                      filled: true,
+                      fillColor: context.colorTheme.surface,
+                      contentPadding: const EdgeInsets.only(
+                        top: 13,
+                        right: 14,
+                        bottom: 13,
+                      ),
+                      border: countrySearchBorder,
+                      enabledBorder: countrySearchBorder,
+                      focusedBorder: countrySearchBorder.copyWith(
+                        borderSide: BorderSide(
+                          color: context.colorTheme.primary,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
               countryButtonStyle: CountryButtonStyle(
                 showFlag: true,
                 flagSize: 18,

@@ -3,6 +3,9 @@ import '../../../network/request_model/organization_listing_request.dart';
 import '../../../network/request_model/product_listing_request.dart';
 import '../../../network/request_model/request_phone_otp_request.dart';
 import '../../../network/request_model/verify_phone_otp_request.dart';
+import '../../../network/request_model/checkout_request.dart';
+import '../../../network/request_model/order_listing_request.dart';
+import '../../../core/enums/address_type.dart';
 
 import '../../entities/auth_result.dart';
 import '../../entities/category.dart';
@@ -11,6 +14,9 @@ import '../../entities/organization_membership.dart';
 import '../../entities/organization.dart';
 import '../../entities/paginated_result.dart';
 import '../../entities/product.dart';
+import '../../entities/address.dart';
+import '../../entities/checkout_preview.dart';
+import '../../entities/order.dart';
 
 abstract class RemoteDatabaseRepository {
   Future<void> requestPhoneOtp({required RequestPhoneOtpRequest request});
@@ -34,6 +40,21 @@ abstract class RemoteDatabaseRepository {
   });
 
   Future<Organization> getOrganizationById({required String id});
+
+  Future<List<Address>> getAddresses({AddressType? type});
+
+  Future<CheckoutPreview> previewCheckout({required CheckoutRequest request});
+
+  Future<Order> placeOrder({
+    required CheckoutRequest request,
+    required String idempotencyKey,
+  });
+
+  Future<Order> getOrderById({required String id});
+
+  Future<PaginatedResult<Order>> getOrders({
+    required OrderListingRequest request,
+  });
 
   Future<OrganizationMembership> createBuyerOrganization({
     required OrganizationRegistrationRequest request,

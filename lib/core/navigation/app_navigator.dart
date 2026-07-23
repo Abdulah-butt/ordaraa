@@ -57,7 +57,7 @@ class AppNavigator {
           right: padding ?? 16,
           top: 20,
         ),
-        child: IntrinsicHeight(child: SafeArea(child: page)),
+        child: SafeArea(child: page),
       ),
     );
   }

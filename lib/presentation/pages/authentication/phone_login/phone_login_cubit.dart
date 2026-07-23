@@ -34,6 +34,8 @@ class PhoneLoginCubit extends Cubit<PhoneLoginState> {
     );
   }
 
+  void goBack() => navigator.goBack();
+
   Future<void> sendCode() async {
     if (!state.isPhoneValid) {
       snackBar.error('Please enter a valid WhatsApp number');

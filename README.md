@@ -237,14 +237,24 @@ Use cases in `domain/usecases` hold reusable business actions. If the same busin
 
 ## 7. Data and Domain Boundaries
 
-### 7.1 Domain
+### 7.1 Enum presentation metadata
+
+- Keep an enum's API value, display text, and semantic presentation mapping
+  centralized with that enum.
+- Status colors must remain theme-aware. Expose methods that resolve colors
+  from `BuildContext` instead of duplicating literal colors in widgets.
+- Reusable badges, chips, and cards must consume the enum's centralized
+  display text and semantic colors; do not repeat status switches in feature
+  widgets.
+
+### 7.2 Domain
 
 - `domain/entities` contains pure models
 - `domain/repositories` contains abstract contracts
 - `domain/usecases` contains business actions
 - `domain/stores` contains app-wide reactive state
 
-### 7.2 Data
+### 7.3 Data
 
 - `data/models/*_json.dart` maps API or local payloads
 - models should expose conversion helpers such as `toDomain()`
@@ -269,6 +279,20 @@ Domain depends on abstractions. Concrete implementations are injected at startup
 No page or widget should call `Dio` directly.
 
 The same contract-first approach should be followed in `lib/services/`: define the abstract service first, then add its implementation.
+
+### 8.1 Cursor Pagination
+
+- All paginated API flows use the shared `PaginatedResult<T>` cursor contract.
+- Send `limit` and the exact opaque `nextCursor` returned by the previous
+  response; never decode, edit, generate, or calculate a cursor locally.
+- First-page and refresh requests omit `cursor`.
+- Never use offsets, page numbers, total pages, or item counts to derive the
+  next request.
+- `totalCount` is optional first-page metadata. Store it from the first
+  response and do not replace or recalculate it from later cursor pages.
+- Prevent concurrent load-more calls, ignore stale responses after filters
+  change, preserve the cursor after load-more failure, and defensively
+  deduplicate appended entities by their stable ID.
 
 ## 9. Theme, Sizing, and Responsive UI Rules
 

@@ -2,8 +2,8 @@ abstract final class Assets {
   static const String logo = 'assets/images/logo.svg';
   static const String logoIcon = 'assets/images/logo_icon.svg';
   static const String logoTransparent = 'assets/images/logo_transparent.svg';
-  static const String roleBuyer = 'assets/icons/orders.svg';
-  static const String roleSeller = 'assets/icons/store.svg';
+  static const String roleBuyer = 'assets/images/role_buyer_illustration.png';
+  static const String roleSeller = 'assets/images/role_seller_illustration.png';
   static const String chevronLeft = 'assets/icons/chevron_left.svg';
   static const String chevronRight = 'assets/icons/chevron_right.svg';
   static const String message = 'assets/icons/message.svg';

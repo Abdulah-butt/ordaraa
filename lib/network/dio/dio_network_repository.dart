@@ -18,11 +18,13 @@ import '../network_repository.dart';
 class DioNetworkRepository implements NetworkRepository {
   final SecureStorageService _secureStorageService;
   final LocalDatabaseRepository _localDatabaseRepository;
+  final Future<void> Function()? _onSessionExpired;
 
   DioNetworkRepository(
     this._secureStorageService,
-    this._localDatabaseRepository,
-  ) {
+    this._localDatabaseRepository, {
+    Future<void> Function()? onSessionExpired,
+  }) : _onSessionExpired = onSessionExpired {
     _initialize();
   }
 
@@ -38,7 +40,13 @@ class DioNetworkRepository implements NetworkRepository {
   void _initialize() {
     final cookieJar = CookieJar();
     dio.interceptors.add(CookieManager(cookieJar));
-    dio.interceptors.add(AuthInterceptor(_secureStorageService, dio));
+    dio.interceptors.add(
+      AuthInterceptor(
+        _secureStorageService,
+        dio,
+        onSessionExpired: _onSessionExpired,
+      ),
+    );
     dio.interceptors.add(OrganizationInterceptor(_localDatabaseRepository));
     dio.interceptors.add(
       PrettyDioLogger(
@@ -58,6 +66,7 @@ class DioNetworkRepository implements NetworkRepository {
     final String endpoint, {
     final NetworkRequestMode mode = NetworkRequestMode.get,
     final Map<String, dynamic> parameters = const {},
+    final Map<String, dynamic> headers = const {},
     final dynamic body,
     final bool isFormData = false,
     final bool returnFullResponse = false,
@@ -70,9 +79,10 @@ class DioNetworkRepository implements NetworkRepository {
       }
 
       // Prepare headers
-      var headers = isFormData
+      final defaultHeaders = isFormData
           ? {'Content-Type': 'multipart/form-data'}
           : {'Content-Type': 'application/json', 'Accept': 'application/json'};
+      final requestHeaders = {...defaultHeaders, ...headers};
 
       // Convert method enum to string
       final method = _getMethodString(mode);
@@ -110,7 +120,7 @@ class DioNetworkRepository implements NetworkRepository {
       final response = await dio.request(
         '${dio.options.baseUrl}$endpoint',
         queryParameters: _removeNullAndEmptyValues(parameters),
-        options: Options(method: method, headers: headers),
+        options: Options(method: method, headers: requestHeaders),
         data: isFormData && requestData is! FormData
             ? FormData.fromMap(requestData as Map<String, dynamic>)
             : requestData,
@@ -165,10 +175,6 @@ class DioNetworkRepository implements NetworkRepository {
 
   Never _handleException(DioException exception) {
     debugPrint("status code : ${exception.response?.statusCode}");
-    final error = exception.error;
-    if (error is AuthSessionExpiredException) {
-      throw error;
-    }
     if (exception.type == DioExceptionType.connectionError) {
       throw ApiStatuses.INTERNET_CONNECTION_PROBLEM;
     }

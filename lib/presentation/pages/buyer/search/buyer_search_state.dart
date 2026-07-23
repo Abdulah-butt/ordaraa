@@ -15,14 +15,12 @@ class BuyerSearchState extends Equatable {
     required this.loadingResults,
     required this.loadingMore,
     required this.productHasNextPage,
-    required this.productLoadedItemCount,
+    required this.productNextCursor,
     required this.productTotalCount,
-    required this.productTotalPages,
     required this.productSignature,
     required this.supplierHasNextPage,
-    required this.supplierLoadedItemCount,
+    required this.supplierNextCursor,
     required this.supplierTotalCount,
-    required this.supplierTotalPages,
     required this.supplierSignature,
   });
 
@@ -34,31 +32,29 @@ class BuyerSearchState extends Equatable {
   final bool loadingResults;
   final bool loadingMore;
   final bool productHasNextPage;
-  final int productLoadedItemCount;
+  final String? productNextCursor;
   final int productTotalCount;
-  final int productTotalPages;
   final String productSignature;
   final bool supplierHasNextPage;
-  final int supplierLoadedItemCount;
+  final String? supplierNextCursor;
   final int supplierTotalCount;
-  final int supplierTotalPages;
   final String supplierSignature;
 
   bool get hasNextPage => resultType == BuyerSearchResultType.products
       ? productHasNextPage
       : supplierHasNextPage;
 
-  int get loadedItemCount => resultType == BuyerSearchResultType.products
-      ? productLoadedItemCount
-      : supplierLoadedItemCount;
+  String? get nextCursor => resultType == BuyerSearchResultType.products
+      ? productNextCursor
+      : supplierNextCursor;
+
+  int get visibleResultCount => resultType == BuyerSearchResultType.products
+      ? products.length
+      : suppliers.length;
 
   int get totalCount => resultType == BuyerSearchResultType.products
       ? productTotalCount
       : supplierTotalCount;
-
-  int get totalPages => resultType == BuyerSearchResultType.products
-      ? productTotalPages
-      : supplierTotalPages;
 
   factory BuyerSearchState.initial() => const BuyerSearchState(
     resultType: BuyerSearchResultType.products,
@@ -69,14 +65,12 @@ class BuyerSearchState extends Equatable {
     loadingResults: false,
     loadingMore: false,
     productHasNextPage: false,
-    productLoadedItemCount: 0,
+    productNextCursor: null,
     productTotalCount: 0,
-    productTotalPages: 0,
     productSignature: '',
     supplierHasNextPage: false,
-    supplierLoadedItemCount: 0,
+    supplierNextCursor: null,
     supplierTotalCount: 0,
-    supplierTotalPages: 0,
     supplierSignature: '',
   );
 
@@ -89,14 +83,12 @@ class BuyerSearchState extends Equatable {
     bool? loadingResults,
     bool? loadingMore,
     bool? productHasNextPage,
-    int? productLoadedItemCount,
+    String? Function()? productNextCursor,
     int? productTotalCount,
-    int? productTotalPages,
     String? productSignature,
     bool? supplierHasNextPage,
-    int? supplierLoadedItemCount,
+    String? Function()? supplierNextCursor,
     int? supplierTotalCount,
-    int? supplierTotalPages,
     String? supplierSignature,
   }) => BuyerSearchState(
     resultType: resultType ?? this.resultType,
@@ -107,16 +99,16 @@ class BuyerSearchState extends Equatable {
     loadingResults: loadingResults ?? this.loadingResults,
     loadingMore: loadingMore ?? this.loadingMore,
     productHasNextPage: productHasNextPage ?? this.productHasNextPage,
-    productLoadedItemCount:
-        productLoadedItemCount ?? this.productLoadedItemCount,
+    productNextCursor: productNextCursor == null
+        ? this.productNextCursor
+        : productNextCursor(),
     productTotalCount: productTotalCount ?? this.productTotalCount,
-    productTotalPages: productTotalPages ?? this.productTotalPages,
     productSignature: productSignature ?? this.productSignature,
     supplierHasNextPage: supplierHasNextPage ?? this.supplierHasNextPage,
-    supplierLoadedItemCount:
-        supplierLoadedItemCount ?? this.supplierLoadedItemCount,
+    supplierNextCursor: supplierNextCursor == null
+        ? this.supplierNextCursor
+        : supplierNextCursor(),
     supplierTotalCount: supplierTotalCount ?? this.supplierTotalCount,
-    supplierTotalPages: supplierTotalPages ?? this.supplierTotalPages,
     supplierSignature: supplierSignature ?? this.supplierSignature,
   );
 
@@ -130,14 +122,12 @@ class BuyerSearchState extends Equatable {
     loadingResults,
     loadingMore,
     productHasNextPage,
-    productLoadedItemCount,
+    productNextCursor,
     productTotalCount,
-    productTotalPages,
     productSignature,
     supplierHasNextPage,
-    supplierLoadedItemCount,
+    supplierNextCursor,
     supplierTotalCount,
-    supplierTotalPages,
     supplierSignature,
   ];
 }

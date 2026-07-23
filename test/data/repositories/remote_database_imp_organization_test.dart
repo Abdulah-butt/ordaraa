@@ -7,14 +7,14 @@ import 'package:ordaraa/network/network_repository.dart';
 import 'package:ordaraa/network/request_model/organization_listing_request.dart';
 
 void main() {
-  test('getOrganizations sends filters and maps pagination totals', () async {
+  test('getOrganizations sends filters and maps cursor pagination', () async {
     final network = _OrganizationNetworkRepository();
     final repository = RemoteDatabaseImp(network);
 
     final result = await repository.getOrganizations(
       request: const OrganizationListingRequest(
         limit: 10,
-        offset: 20,
+        cursor: 'organization-cursor/+==',
         query: 'seafood',
       ),
     );
@@ -23,13 +23,14 @@ void main() {
     expect(network.returnFullResponse, isTrue);
     expect(network.parameters, {
       'limit': 10,
-      'offset': 20,
+      'cursor': 'organization-cursor/+==',
       'type': OrganizationType.seller.apiValue,
       'q': 'seafood',
     });
     expect(result.hasNextPage, isTrue);
     expect(result.totalCount, 47);
-    expect(result.totalPages, 5);
+    expect(result.nextCursor, 'next-organization-cursor');
+    expect(network.parameters, isNot(contains('offset')));
     expect(result.items.single.name, 'Sydney Seafood Co.');
     expect(result.items.single.market.currency, 'AUD');
     expect(result.items.single.verified, isTrue);
@@ -63,6 +64,7 @@ class _OrganizationNetworkRepository implements NetworkRepository {
     String endpoint, {
     NetworkRequestMode mode = NetworkRequestMode.get,
     Map<String, dynamic> parameters = const {},
+    Map<String, dynamic> headers = const {},
     dynamic body,
     bool isFormData = false,
     bool returnFullResponse = false,
@@ -84,10 +86,10 @@ final _response = <String, dynamic>{
   'data': [_organization],
   'meta': {
     'pagination': {
+      'nextCursor': 'next-organization-cursor',
       'hasNextPage': true,
       'limit': 10,
       'totalCount': 47,
-      'totalPages': 5,
     },
   },
 };

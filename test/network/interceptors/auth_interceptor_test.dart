@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ordaraa/core/enums/user_role.dart';
 import 'package:ordaraa/network/api_endpoint.dart';
 import 'package:ordaraa/network/interceptors/auth_interceptor.dart';
 import 'package:ordaraa/services/secure_storage/secure_storage_service.dart';
@@ -69,7 +70,7 @@ void main() {
       expect(storage.savePairCalls, 1);
     });
 
-    test('uses one refresh for concurrent expired requests', () async {
+    test('refreshes and retries each concurrent expired request', () async {
       final storage = _FakeSecureStorage(
         accessToken: 'access-old',
         refreshToken: 'refresh-old',
@@ -101,93 +102,100 @@ void main() {
       ]);
 
       expect(responses, hasLength(4));
-      expect(refreshCalls, 1);
-      expect(storage.savePairCalls, 1);
+      expect(refreshCalls, 4);
+      expect(storage.savePairCalls, 4);
     });
 
-    test('expires the session when the refresh token is rejected', () async {
-      final storage = _FakeSecureStorage(
-        accessToken: 'access-old',
-        refreshToken: 'refresh-invalid',
-      );
-      var expirationCalls = 0;
-      final harness = _Harness(
-        storage: storage,
-        onSessionExpired: () async {
-          expirationCalls++;
-          await storage.clearAuthTokens();
-        },
-        handler: (options) {
-          if (options.path.endsWith(APIEndpoint.refreshAuthSession)) {
-            return _jsonResponse(401, {
-              'message': 'Invalid refresh token.',
-              'error': {'code': 'UNAUTHORIZED'},
-            });
-          }
-          return _tokenExpiredResponse();
-        },
-      );
-      addTearDown(harness.close);
+    test(
+      'expires the local session when the refresh token is rejected',
+      () async {
+        final storage = _FakeSecureStorage(
+          accessToken: 'access-old',
+          refreshToken: 'refresh-invalid',
+        );
+        var sessionExpiredCalls = 0;
+        final harness = _Harness(
+          storage: storage,
+          onSessionExpired: () async {
+            sessionExpiredCalls++;
+            await storage.clearAuthTokens();
+          },
+          handler: (options) {
+            if (options.path.endsWith(APIEndpoint.refreshAuthSession)) {
+              return _jsonResponse(401, {
+                'message': 'Invalid refresh token.',
+                'error': {'code': 'UNAUTHORIZED'},
+              });
+            }
+            return _tokenExpiredResponse();
+          },
+        );
+        addTearDown(harness.close);
 
-      final error = await _dioErrorFrom(harness.dio.get<dynamic>('/resource'));
+        final error = await _dioErrorFrom(
+          harness.dio.get<dynamic>('/resource'),
+        );
 
-      expect(error.error, isA<AuthSessionExpiredException>());
-      expect(expirationCalls, 1);
-      expect(storage.accessToken, isEmpty);
-      expect(storage.refreshToken, isEmpty);
-    });
+        expect(error.response?.statusCode, 401);
+        expect(storage.accessToken, isEmpty);
+        expect(storage.refreshToken, isEmpty);
+        expect(sessionExpiredCalls, 1);
+      },
+    );
 
-    test('expires the session once for concurrent refresh rejection', () async {
-      final storage = _FakeSecureStorage(
-        accessToken: 'access-old',
-        refreshToken: 'refresh-invalid',
-      );
-      var refreshCalls = 0;
-      var expirationCalls = 0;
-      final harness = _Harness(
-        storage: storage,
-        onSessionExpired: () async {
-          expirationCalls++;
-          await Future<void>.delayed(const Duration(milliseconds: 10));
-          await storage.clearAuthTokens();
-        },
-        handler: (options) async {
-          if (options.path.endsWith(APIEndpoint.refreshAuthSession)) {
-            refreshCalls++;
-            await Future<void>.delayed(const Duration(milliseconds: 20));
-            return _jsonResponse(401, {
-              'message': 'Invalid refresh token.',
-              'error': {'code': 'UNAUTHORIZED'},
-            });
-          }
-          return _tokenExpiredResponse();
-        },
-      );
-      addTearDown(harness.close);
+    test(
+      'expires the session once when concurrent refresh requests are rejected',
+      () async {
+        final storage = _FakeSecureStorage(
+          accessToken: 'access-old',
+          refreshToken: 'refresh-invalid',
+        );
+        var refreshCalls = 0;
+        var sessionExpiredCalls = 0;
+        final harness = _Harness(
+          storage: storage,
+          onSessionExpired: () async {
+            sessionExpiredCalls++;
+            await storage.clearAuthTokens();
+          },
+          handler: (options) async {
+            if (options.path.endsWith(APIEndpoint.refreshAuthSession)) {
+              refreshCalls++;
+              await Future<void>.delayed(const Duration(milliseconds: 20));
+              return _jsonResponse(401, {
+                'message': 'Invalid refresh token.',
+                'error': {'code': 'UNAUTHORIZED'},
+              });
+            }
+            return _tokenExpiredResponse();
+          },
+        );
+        addTearDown(harness.close);
 
-      final errors = await Future.wait([
-        _dioErrorFrom(harness.dio.get<dynamic>('/resource/1')),
-        _dioErrorFrom(harness.dio.get<dynamic>('/resource/2')),
-        _dioErrorFrom(harness.dio.get<dynamic>('/resource/3')),
-      ]);
+        final errors = await Future.wait([
+          _dioErrorFrom(harness.dio.get<dynamic>('/resource/1')),
+          _dioErrorFrom(harness.dio.get<dynamic>('/resource/2')),
+          _dioErrorFrom(harness.dio.get<dynamic>('/resource/3')),
+        ]);
 
-      expect(
-        errors.every((error) => error.error is AuthSessionExpiredException),
-        isTrue,
-      );
-      expect(refreshCalls, 1);
-      expect(expirationCalls, 1);
-    });
+        expect(
+          errors.every((error) => error.response?.statusCode == 401),
+          isTrue,
+        );
+        expect(refreshCalls, 3);
+        expect(sessionExpiredCalls, 1);
+        expect(storage.accessToken, isEmpty);
+        expect(storage.refreshToken, isEmpty);
+      },
+    );
 
     test('does not clear tokens for a transient refresh failure', () async {
       final storage = _FakeSecureStorage(
         accessToken: 'access-old',
         refreshToken: 'refresh-old',
       );
-      var expirationCalls = 0;
       final harness = _Harness(
         storage: storage,
-        onSessionExpired: () async => expirationCalls++,
         handler: (options) {
           if (options.path.endsWith(APIEndpoint.refreshAuthSession)) {
             return _jsonResponse(503, {'message': 'Temporarily unavailable'});
@@ -199,10 +207,42 @@ void main() {
 
       final error = await _dioErrorFrom(harness.dio.get<dynamic>('/resource'));
 
-      expect(error.response?.statusCode, 503);
-      expect(expirationCalls, 0);
+      expect(error.response?.statusCode, 401);
       expect(storage.accessToken, 'access-old');
       expect(storage.refreshToken, 'refresh-old');
+    });
+
+    test('attempts refresh for any 401 response code', () async {
+      final storage = _FakeSecureStorage(
+        accessToken: 'access-old',
+        refreshToken: 'refresh-old',
+      );
+      var refreshCalls = 0;
+      final harness = _Harness(
+        storage: storage,
+        handler: (options) {
+          if (options.path.endsWith(APIEndpoint.refreshAuthSession)) {
+            refreshCalls++;
+            return _jsonResponse(200, _refreshResponse);
+          }
+          if (options.headers['Authorization'] == 'Bearer access-new') {
+            return _jsonResponse(200, {
+              'data': {'ok': true},
+            });
+          }
+          return _jsonResponse(401, {
+            'message': 'Unauthorized.',
+            'error': {'code': 'UNAUTHORIZED'},
+          });
+        },
+      );
+      addTearDown(harness.close);
+
+      final response = await harness.dio.get<dynamic>('/resource');
+
+      expect(response.statusCode, 200);
+      expect(refreshCalls, 1);
+      expect(storage.accessToken, 'access-new');
     });
 
     test('never refreshes a replayed request more than once', () async {
@@ -231,11 +271,11 @@ void main() {
 
     test('expires the session when no refresh token exists', () async {
       final storage = _FakeSecureStorage(accessToken: 'access-old');
-      var expirationCalls = 0;
+      var sessionExpiredCalls = 0;
       final harness = _Harness(
         storage: storage,
         onSessionExpired: () async {
-          expirationCalls++;
+          sessionExpiredCalls++;
           await storage.clearAuthTokens();
         },
         handler: (_) => _tokenExpiredResponse(),
@@ -244,8 +284,9 @@ void main() {
 
       final error = await _dioErrorFrom(harness.dio.get<dynamic>('/resource'));
 
-      expect(error.error, isA<AuthSessionExpiredException>());
-      expect(expirationCalls, 1);
+      expect(error.response?.statusCode, 401);
+      expect(storage.accessToken, isEmpty);
+      expect(sessionExpiredCalls, 1);
     });
   });
 }
@@ -298,27 +339,27 @@ class _Harness {
     required SecureStorageService storage,
     required _RequestHandler handler,
     Future<void> Function()? onSessionExpired,
-  }) : dio = Dio(BaseOptions(baseUrl: 'https://ordara.test')),
-       refreshDio = Dio(BaseOptions(baseUrl: 'https://ordara.test')) {
+  }) : dio = Dio(BaseOptions(baseUrl: 'https://ordara.test')) {
     final adapter = _ScriptedAdapter(handler);
     dio.httpClientAdapter = adapter;
-    refreshDio.httpClientAdapter = adapter;
     dio.interceptors.add(
       AuthInterceptor(
         storage,
         dio,
-        refreshDio: refreshDio,
+        refreshDioFactory: () {
+          final refreshDio = Dio(BaseOptions(baseUrl: 'https://ordara.test'));
+          refreshDio.httpClientAdapter = adapter;
+          return refreshDio;
+        },
         onSessionExpired: onSessionExpired,
       ),
     );
   }
 
   final Dio dio;
-  final Dio refreshDio;
 
   void close() {
     dio.close(force: true);
-    refreshDio.close(force: true);
   }
 }
 
@@ -346,11 +387,13 @@ class _FakeSecureStorage implements SecureStorageService {
   String accessToken;
   String refreshToken;
   int savePairCalls = 0;
+  UserRole? intendedRole;
 
   @override
   Future<void> clearAuthTokens() async {
     accessToken = '';
     refreshToken = '';
+    intendedRole = null;
   }
 
   @override
@@ -358,6 +401,9 @@ class _FakeSecureStorage implements SecureStorageService {
 
   @override
   Future<String> getRefreshToken() async => refreshToken;
+
+  @override
+  Future<UserRole?> getIntendedUserRole() async => intendedRole;
 
   @override
   Future<void> saveAccessToken(String token) async {
@@ -377,5 +423,10 @@ class _FakeSecureStorage implements SecureStorageService {
   @override
   Future<void> saveRefreshToken(String token) async {
     refreshToken = token;
+  }
+
+  @override
+  Future<void> saveIntendedUserRole(UserRole role) async {
+    intendedRole = role;
   }
 }

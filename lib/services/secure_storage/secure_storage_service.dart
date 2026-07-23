@@ -1,3 +1,5 @@
+import '../../core/enums/user_role.dart';
+
 abstract class SecureStorageService {
   Future<void> saveAccessToken(String token);
 
@@ -11,6 +13,10 @@ abstract class SecureStorageService {
   Future<String> getAccessToken();
 
   Future<String> getRefreshToken();
+
+  Future<void> saveIntendedUserRole(UserRole role);
+
+  Future<UserRole?> getIntendedUserRole();
 
   Future<void> clearAuthTokens();
 }

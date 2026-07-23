@@ -10,6 +10,11 @@ class APIEndpoint {
   static String organizationById(String id) => '$organizations/$id';
   static const String createBuyerOrganization = '/api/v1/organizations';
   static const String createSellerApplication = '/api/v1/seller-applications';
+  static const String currentOrganization = '/api/v1/organizations/current';
+  static const String organizationAddresses = '$currentOrganization/addresses';
+  static const String checkoutPreview = '$currentOrganization/checkout/preview';
+  static const String orders = '$currentOrganization/orders';
+  static String orderById(String id) => '$orders/$id';
 
   static const String login = "/api/auth/login";
   static const String createAccount = "/api/auth/create_account";

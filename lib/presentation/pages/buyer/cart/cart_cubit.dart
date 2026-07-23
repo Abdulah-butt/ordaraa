@@ -42,7 +42,8 @@ class CartCubit extends Cubit<CartState> {
   });
 
   void checkout() {
-    snackBar.info('Checkout will be connected to order pricing next.');
+    if (cartStore.state.isEmpty) return;
+    navigator.openCheckout();
   }
 
   void _onCartChanged(CartStoreState cart) {

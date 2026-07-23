@@ -5,7 +5,6 @@ import '../../domain/entities/user.dart';
 class UserJson {
   const UserJson({
     required this.id,
-    required this.authUserId,
     required this.displayName,
     required this.avatar,
     required this.locale,
@@ -14,7 +13,6 @@ class UserJson {
   });
 
   final String id;
-  final String authUserId;
   final String displayName;
   final String? avatar;
   final String locale;
@@ -25,7 +23,6 @@ class UserJson {
     final platformRoleValue = json['platformRole'] as String?;
     return UserJson(
       id: json['id'] as String,
-      authUserId: json['authUserId'] as String,
       displayName: json['displayName'] as String,
       avatar: json['avatar'] as String?,
       locale: json['locale'] as String,
@@ -38,7 +35,6 @@ class UserJson {
 
   Map<String, dynamic> toJson() => {
     'id': id,
-    'authUserId': authUserId,
     'displayName': displayName,
     'avatar': avatar,
     'locale': locale,
@@ -48,7 +44,6 @@ class UserJson {
 
   User toDomain() => User(
     id: id,
-    authUserId: authUserId,
     displayName: displayName,
     avatar: avatar,
     locale: locale,

@@ -46,8 +46,7 @@ class CustomButton extends StatelessWidget {
     final isEffectivelyDisabled = isDisabled;
     final effectiveBackgroundColor = isEffectivelyDisabled
         ? Colors.grey.shade300
-        : (backgroundColor ??
-              (isSecondary ? colorScheme.surfaceContainerHighest : null));
+        : (backgroundColor ?? (isSecondary ? colorScheme.surface : null));
     final effectiveForegroundColor = isEffectivelyDisabled
         ? Colors.grey.shade500
         : (foregroundColor ?? (isSecondary ? colorScheme.onSurface : null));

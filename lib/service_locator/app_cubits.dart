@@ -20,10 +20,16 @@ import '../presentation/pages/buyer/categories/buyer_categories_cubit.dart';
 import '../presentation/pages/buyer/categories/buyer_categories_navigator.dart';
 import '../presentation/pages/buyer/cart/cart_cubit.dart';
 import '../presentation/pages/buyer/cart/cart_navigator.dart';
+import '../presentation/pages/buyer/checkout/checkout_cubit.dart';
+import '../presentation/pages/buyer/checkout/checkout_navigator.dart';
+import '../presentation/pages/buyer/order_confirmed/order_confirmed_cubit.dart';
+import '../presentation/pages/buyer/order_confirmed/order_confirmed_navigator.dart';
 import '../presentation/pages/buyer/home/buyer_home_cubit.dart';
 import '../presentation/pages/buyer/home/buyer_home_navigator.dart';
 import '../presentation/pages/buyer/orders/buyer_orders_cubit.dart';
 import '../presentation/pages/buyer/orders/buyer_orders_navigator.dart';
+import '../presentation/pages/buyer/order_detail/order_detail_cubit.dart';
+import '../presentation/pages/buyer/order_detail/order_detail_navigator.dart';
 import '../presentation/pages/buyer/product_detail/product_detail_cubit.dart';
 import '../presentation/pages/buyer/product_detail/product_detail_navigator.dart';
 import '../presentation/pages/buyer/search/buyer_search_cubit.dart';
@@ -137,6 +143,33 @@ class AppCubits {
     getIt.registerSingleton<CartCubit>(
       CartCubit(navigator: getIt(), cartStore: getIt(), snackBar: getIt()),
     );
+    getIt.registerSingleton<CheckoutNavigator>(CheckoutNavigator(getIt()));
+    getIt.registerSingleton<CheckoutCubit>(
+      CheckoutCubit(
+        navigator: getIt(),
+        cartStore: getIt(),
+        getAddressesUseCase: getIt(),
+        previewCheckoutUseCase: getIt(),
+        placeOrderUseCase: getIt(),
+        snackBar: getIt(),
+      ),
+    );
+    getIt.registerSingleton<OrderConfirmedNavigator>(
+      OrderConfirmedNavigator(getIt()),
+    );
+    getIt.registerSingleton<OrderConfirmedCubit>(
+      OrderConfirmedCubit(navigator: getIt(), getOrderByIdUseCase: getIt()),
+    );
+    getIt.registerSingleton<OrderDetailNavigator>(
+      OrderDetailNavigator(getIt()),
+    );
+    getIt.registerSingleton<OrderDetailCubit>(
+      OrderDetailCubit(
+        navigator: getIt(),
+        getOrderByIdUseCase: getIt(),
+        snackBar: getIt(),
+      ),
+    );
     getIt.registerSingleton<BuyerCategoriesNavigator>(
       BuyerCategoriesNavigator(getIt()),
     );
@@ -187,7 +220,7 @@ class AppCubits {
       BuyerOrdersNavigator(getIt()),
     );
     getIt.registerSingleton<BuyerOrdersCubit>(
-      BuyerOrdersCubit(navigator: getIt()),
+      BuyerOrdersCubit(navigator: getIt(), getOrdersUseCase: getIt()),
     );
     getIt.registerSingleton<BuyerAccountNavigator>(
       BuyerAccountNavigator(getIt()),

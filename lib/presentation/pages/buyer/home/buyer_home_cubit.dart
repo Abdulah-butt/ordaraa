@@ -60,7 +60,7 @@ class BuyerHomeCubit extends Cubit<BuyerHomeState> {
     emit(state.copyWith(loadingSuppliers: true));
     try {
       final result = await getOrganizationsUseCase.execute(
-        request: const OrganizationListingRequest(limit: 5, offset: 0),
+        request: const OrganizationListingRequest(limit: 5),
       );
       emit(state.copyWith(suppliers: result.items));
     } catch (error) {
@@ -85,7 +85,7 @@ class BuyerHomeCubit extends Cubit<BuyerHomeState> {
     emit(state.copyWith(loadingProducts: true));
     try {
       final result = await getProductListingsUseCase.execute(
-        request: const ProductListingRequest(limit: 5, offset: 0),
+        request: const ProductListingRequest(limit: 5),
       );
       emit(state.copyWith(products: result.items));
     } catch (error) {

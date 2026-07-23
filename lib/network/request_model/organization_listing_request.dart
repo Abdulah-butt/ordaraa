@@ -3,20 +3,19 @@ import '../../core/enums/organization_type.dart';
 class OrganizationListingRequest {
   const OrganizationListingRequest({
     required this.limit,
-    required this.offset,
+    this.cursor,
     this.type = OrganizationType.seller,
     this.query,
-  }) : assert(limit >= 1 && limit <= 100),
-       assert(offset >= 0 && offset <= 10000);
+  }) : assert(limit >= 1 && limit <= 100);
 
   final int limit;
-  final int offset;
+  final String? cursor;
   final OrganizationType type;
   final String? query;
 
   Map<String, dynamic> toQueryParameters() => {
     'limit': limit,
-    'offset': offset,
+    if (cursor != null && cursor!.isNotEmpty) 'cursor': cursor,
     'type': type.apiValue,
     if (query != null && query!.trim().isNotEmpty) 'q': query!.trim(),
   };

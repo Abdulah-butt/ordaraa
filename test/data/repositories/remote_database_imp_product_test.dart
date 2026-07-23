@@ -14,7 +14,7 @@ void main() {
       final repository = RemoteDatabaseImp(network);
       const request = ProductListingRequest(
         limit: 10,
-        offset: 20,
+        cursor: 'product-cursor/+==',
         query: 'prawn',
         categoryId: 'category-id',
         sellerOrganizationId: 'seller-id',
@@ -26,7 +26,7 @@ void main() {
       expect(network.returnFullResponse, isTrue);
       expect(network.parameters, {
         'limit': 10,
-        'offset': 20,
+        'cursor': 'product-cursor/+==',
         'q': 'prawn',
         'categoryId': 'category-id',
         'sellerOrganizationId': 'seller-id',
@@ -34,7 +34,8 @@ void main() {
       expect(result.hasNextPage, isTrue);
       expect(result.limit, 10);
       expect(result.totalCount, 47);
-      expect(result.totalPages, 5);
+      expect(result.nextCursor, 'next-product-cursor');
+      expect(network.parameters, isNot(contains('offset')));
       expect(result.items, hasLength(1));
       final product = result.items.single;
       expect(product.variant.label, 'Black Tiger Shrimp, 16/20');
@@ -73,6 +74,7 @@ class _ProductNetworkRepository implements NetworkRepository {
     String endpoint, {
     NetworkRequestMode mode = NetworkRequestMode.get,
     Map<String, dynamic> parameters = const {},
+    Map<String, dynamic> headers = const {},
     dynamic body,
     bool isFormData = false,
     bool returnFullResponse = false,
@@ -93,11 +95,10 @@ final _response = <String, dynamic>{
   'data': [_product],
   'meta': {
     'pagination': {
-      'nextCursor': null,
+      'nextCursor': 'next-product-cursor',
       'hasNextPage': true,
       'limit': 10,
       'totalCount': 47,
-      'totalPages': 5,
     },
     'filters': null,
     'sort': null,

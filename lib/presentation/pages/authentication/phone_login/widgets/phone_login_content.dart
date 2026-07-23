@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../../core/extensions/theme_extension.dart';
 import '../../../../../core/theme/app_spacing.dart';
+import '../../../../../core/utils/assets.dart';
 import '../../../../widgets/custom_button.dart';
 import '../../../../widgets/custom_phone_number_field.dart';
 import '../../widgets/auth_whatsapp_notice.dart';
@@ -33,7 +35,40 @@ class PhoneLoginContent extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const PhoneLoginBrand(),
+                    Row(
+                      children: [
+                        Semantics(
+                          button: true,
+                          label: 'Back to role selection',
+                          child: Material(
+                            color: context.colorTheme.surface,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: context.colorTheme.outlineVariant,
+                              ),
+                            ),
+                            child: InkWell(
+                              onTap: cubit.goBack,
+                              borderRadius: BorderRadius.circular(12),
+                              child: SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: Center(
+                                  child: SvgPicture.asset(
+                                    Assets.chevronLeft,
+                                    width: 22,
+                                    height: 22,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        const Expanded(child: PhoneLoginBrand()),
+                      ],
+                    ),
                     const SizedBox(height: AppSpacing.lg),
                     SizedBox(
                       height: 150,

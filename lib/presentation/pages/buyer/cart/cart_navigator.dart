@@ -4,6 +4,7 @@ import '../../../../core/navigation/app_navigator.dart';
 import '../../../sheets/confirmation_sheet.dart';
 import '../home/buyer_home_initial_params.dart';
 import '../home/buyer_home_navigator.dart';
+import '../checkout/checkout_navigator.dart';
 import '../product_detail/product_detail_initial_params.dart';
 import '../product_detail/product_detail_navigator.dart';
 import '../seller_detail/seller_detail_initial_params.dart';
@@ -11,7 +12,8 @@ import '../seller_detail/seller_detail_navigator.dart';
 import 'cart_initial_params.dart';
 import 'cart_page.dart';
 
-class CartNavigator with BuyerHomeRoute, ProductDetailRoute, SellerDetailRoute {
+class CartNavigator
+    with BuyerHomeRoute, ProductDetailRoute, SellerDetailRoute, CheckoutRoute {
   CartNavigator(this.navigator);
 
   @override

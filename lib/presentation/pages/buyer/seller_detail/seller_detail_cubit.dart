@@ -25,7 +25,7 @@ class SellerDetailCubit extends Cubit<SellerDetailState> {
     required this.snackBar,
   }) : super(SellerDetailState.initial());
 
-  static const _pageSize = 10;
+  static const _limit = 10;
 
   final SellerDetailNavigator navigator;
   final GetOrganizationByIdUseCase getOrganizationByIdUseCase;
@@ -64,14 +64,14 @@ class SellerDetailCubit extends Cubit<SellerDetailState> {
         loading: true,
         loadingMore: false,
         hasNextPage: preserveData ? state.hasNextPage : false,
-        loadedItemCount: preserveData ? state.loadedItemCount : 0,
+        nextCursor: () => null,
         totalCount: preserveData ? state.totalCount : 0,
         errorMessage: () => null,
       ),
     );
     try {
       final detailFuture = getOrganizationByIdUseCase.execute(id: sellerId);
-      final listingsFuture = _fetchProducts(sellerId: sellerId, offset: 0);
+      final listingsFuture = _fetchProducts(sellerId: sellerId);
       final detail = await detailFuture;
       final listings = await listingsFuture;
       if (generation != _requestGeneration) return;
@@ -80,7 +80,7 @@ class SellerDetailCubit extends Cubit<SellerDetailState> {
           detail: () => detail,
           products: listings.items,
           hasNextPage: listings.hasNextPage,
-          loadedItemCount: listings.items.length,
+          nextCursor: () => listings.nextCursor,
           totalCount: listings.totalCount ?? listings.items.length,
         ),
       );
@@ -97,7 +97,9 @@ class SellerDetailCubit extends Cubit<SellerDetailState> {
 
   Future<void> loadMore() async {
     final sellerId = _sellerId;
+    final cursor = state.nextCursor;
     if (sellerId == null ||
+        cursor == null ||
         state.loading ||
         state.loadingMore ||
         !state.hasNextPage) {
@@ -106,17 +108,13 @@ class SellerDetailCubit extends Cubit<SellerDetailState> {
     final generation = _requestGeneration;
     emit(state.copyWith(loadingMore: true));
     try {
-      final result = await _fetchProducts(
-        sellerId: sellerId,
-        offset: state.loadedItemCount,
-      );
+      final result = await _fetchProducts(sellerId: sellerId, cursor: cursor);
       if (generation != _requestGeneration) return;
       emit(
         state.copyWith(
-          products: [...state.products, ...result.items],
+          products: _deduplicateProducts([...state.products, ...result.items]),
           hasNextPage: result.hasNextPage,
-          loadedItemCount: state.loadedItemCount + result.items.length,
-          totalCount: result.totalCount ?? state.totalCount,
+          nextCursor: () => result.nextCursor,
         ),
       );
     } catch (error) {
@@ -132,15 +130,23 @@ class SellerDetailCubit extends Cubit<SellerDetailState> {
 
   Future<PaginatedResult<Product>> _fetchProducts({
     required String sellerId,
-    required int offset,
+    String? cursor,
   }) {
     return getProductListingsUseCase.execute(
       request: ProductListingRequest(
-        limit: _pageSize,
-        offset: offset,
+        limit: _limit,
+        cursor: cursor,
         sellerOrganizationId: sellerId,
       ),
     );
+  }
+
+  List<Product> _deduplicateProducts(List<Product> products) {
+    final byId = <String, Product>{};
+    for (final product in products) {
+      byId.putIfAbsent(product.id, () => product);
+    }
+    return byId.values.toList(growable: false);
   }
 
   void _onScroll() {

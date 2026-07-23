@@ -5,6 +5,7 @@ abstract class NetworkRepository {
     final String endpoint, {
     final NetworkRequestMode mode = NetworkRequestMode.get,
     final Map<String, dynamic> parameters,
+    final Map<String, dynamic> headers = const {},
     final dynamic body,
     final bool isFormData = false,
     final bool returnFullResponse = false,
