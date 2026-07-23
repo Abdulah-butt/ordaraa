@@ -12,11 +12,17 @@ class BuyerAccountContent extends StatelessWidget {
     required this.state,
     required this.onLogout,
     required this.onDeleteAccount,
+    required this.onOrganizationProfile,
+    required this.onPersonalProfile,
+    required this.onSavedAddresses,
   });
 
   final BuyerAccountState state;
   final VoidCallback onLogout;
   final VoidCallback onDeleteAccount;
+  final VoidCallback onOrganizationProfile;
+  final VoidCallback onPersonalProfile;
+  final VoidCallback onSavedAddresses;
 
   @override
   Widget build(BuildContext context) {
@@ -58,18 +64,20 @@ class BuyerAccountContent extends StatelessWidget {
                   displayName: state.displayName,
                   initials: state.initials,
                   roleLabel: state.roleLabel,
+                  onEdit: onPersonalProfile,
                 ),
                 const SizedBox(height: 12),
-                const BuyerAccountSection(
+                BuyerAccountSection(
                   title: 'Organization',
                   items: [
-                    BuyerAccountItem(label: 'Organization profile'),
                     BuyerAccountItem(
-                      label: 'Members · Coming Later',
-                      enabled: false,
+                      label: 'Organization profile',
+                      onTap: onOrganizationProfile,
                     ),
-                    BuyerAccountItem(label: 'Saved addresses'),
-                    BuyerAccountItem(label: 'Billing details'),
+                    BuyerAccountItem(
+                      label: 'Saved addresses',
+                      onTap: onSavedAddresses,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -77,8 +85,7 @@ class BuyerAccountContent extends StatelessWidget {
                   title: 'Support & legal',
                   items: [
                     BuyerAccountItem(label: 'Support'),
-                    BuyerAccountItem(label: 'Terms'),
-                    BuyerAccountItem(label: 'Privacy'),
+                    BuyerAccountItem(label: 'Terms & Privacy'),
                   ],
                 ),
                 const SizedBox(height: 12),

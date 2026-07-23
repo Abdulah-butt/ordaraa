@@ -19,6 +19,12 @@ import '../../presentation/pages/choose_role/choose_role_initial_params.dart';
 import '../../presentation/pages/choose_role/choose_role_page.dart';
 import '../../presentation/pages/buyer/account/buyer_account_initial_params.dart';
 import '../../presentation/pages/buyer/account/buyer_account_page.dart';
+import '../../presentation/pages/common/organization_profile/organization_profile_initial_params.dart';
+import '../../presentation/pages/common/organization_profile/organization_profile_page.dart';
+import '../../presentation/pages/common/personal_profile/personal_profile_initial_params.dart';
+import '../../presentation/pages/common/personal_profile/personal_profile_page.dart';
+import '../../presentation/pages/common/saved_addresses/saved_addresses_initial_params.dart';
+import '../../presentation/pages/common/saved_addresses/saved_addresses_page.dart';
 import '../../presentation/pages/buyer/bottom_navigation/buyer_bottom_navigation.dart';
 import '../../presentation/pages/buyer/categories/buyer_categories_initial_params.dart';
 import '../../presentation/pages/buyer/categories/buyer_categories_page.dart';
@@ -193,6 +199,48 @@ class AppRouter {
             child: ProductDetailPage(
               cubit: getIt(),
               initialParams: ProductDetailInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: OrganizationProfilePage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: OrganizationProfilePage(
+              cubit: getIt(),
+              initialParams: OrganizationProfileInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: PersonalProfilePage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: PersonalProfilePage(
+              cubit: getIt(),
+              initialParams: PersonalProfileInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: SavedAddressesPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: SavedAddressesPage(
+              cubit: getIt(),
+              initialParams: SavedAddressesInitialParams.fromMap(
                 state.uri.queryParameters,
               ),
             ),

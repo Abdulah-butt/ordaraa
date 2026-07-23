@@ -42,6 +42,9 @@ class _BuyerAccountPageState extends State<BuyerAccountPage> {
             state: state,
             onLogout: cubit.confirmLogout,
             onDeleteAccount: cubit.confirmDeleteAccount,
+            onOrganizationProfile: cubit.openOrganizationProfile,
+            onPersonalProfile: cubit.openPersonalProfile,
+            onSavedAddresses: cubit.openSavedAddresses,
           ),
         );
       },

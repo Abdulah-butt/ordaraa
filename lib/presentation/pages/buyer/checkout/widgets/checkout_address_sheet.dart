@@ -79,7 +79,7 @@ class CheckoutAddressSheet extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  address.label ?? address.type.apiValue,
+                                  address.label ?? address.type.displayText,
                                   style: context.textTheme.labelMedium
                                       ?.copyWith(fontWeight: FontWeight.w700),
                                 ),

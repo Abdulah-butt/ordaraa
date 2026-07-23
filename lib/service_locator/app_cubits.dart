@@ -16,6 +16,12 @@ import '../presentation/pages/choose_role/choose_role_cubit.dart';
 import '../presentation/pages/choose_role/choose_role_navigator.dart';
 import '../presentation/pages/buyer/account/buyer_account_cubit.dart';
 import '../presentation/pages/buyer/account/buyer_account_navigator.dart';
+import '../presentation/pages/common/organization_profile/organization_profile_cubit.dart';
+import '../presentation/pages/common/organization_profile/organization_profile_navigator.dart';
+import '../presentation/pages/common/personal_profile/personal_profile_cubit.dart';
+import '../presentation/pages/common/personal_profile/personal_profile_navigator.dart';
+import '../presentation/pages/common/saved_addresses/saved_addresses_cubit.dart';
+import '../presentation/pages/common/saved_addresses/saved_addresses_navigator.dart';
 import '../presentation/pages/buyer/categories/buyer_categories_cubit.dart';
 import '../presentation/pages/buyer/categories/buyer_categories_navigator.dart';
 import '../presentation/pages/buyer/cart/cart_cubit.dart';
@@ -233,6 +239,34 @@ class AppCubits {
         logoutUseCase: getIt(),
         snackBar: getIt(),
       ),
+    );
+    getIt.registerSingleton<OrganizationProfileNavigator>(
+      OrganizationProfileNavigator(getIt()),
+    );
+    getIt.registerSingleton<OrganizationProfileCubit>(
+      OrganizationProfileCubit(
+        navigator: getIt(),
+        getCurrentOrganizationUseCase: getIt(),
+        updateOrganizationProfileUseCase: getIt(),
+        snackBar: getIt(),
+      ),
+    );
+    getIt.registerSingleton<PersonalProfileNavigator>(
+      PersonalProfileNavigator(getIt()),
+    );
+    getIt.registerSingleton<PersonalProfileCubit>(
+      PersonalProfileCubit(
+        navigator: getIt(),
+        userStore: getIt(),
+        updateUserProfileUseCase: getIt(),
+        snackBar: getIt(),
+      ),
+    );
+    getIt.registerSingleton<SavedAddressesNavigator>(
+      SavedAddressesNavigator(getIt()),
+    );
+    getIt.registerSingleton<SavedAddressesCubit>(
+      SavedAddressesCubit(navigator: getIt(), getAddressesUseCase: getIt()),
     );
   }
 }

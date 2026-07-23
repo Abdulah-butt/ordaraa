@@ -1,10 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ordaraa/core/enums/organization_type.dart';
+import 'package:ordaraa/core/enums/payment_terms.dart';
 import 'package:ordaraa/data/repositories/database/remote_database_imp.dart';
 import 'package:ordaraa/network/api_endpoint.dart';
 import 'package:ordaraa/network/file_field.dart';
 import 'package:ordaraa/network/network_repository.dart';
 import 'package:ordaraa/network/request_model/organization_listing_request.dart';
+import 'package:ordaraa/network/request_model/update_organization_profile_request.dart';
 
 void main() {
   test('getOrganizations sends filters and maps cursor pagination', () async {
@@ -52,12 +54,63 @@ void main() {
     expect(detail.addresses.single.city, 'Sydney');
     expect(detail.addresses.single.isDefault, isTrue);
   });
+
+  test(
+    'getCurrentOrganization uses the current organization endpoint',
+    () async {
+      final network = _OrganizationNetworkRepository();
+      final repository = RemoteDatabaseImp(network);
+
+      final organization = await repository.getCurrentOrganization();
+
+      expect(network.endpoint, APIEndpoint.currentOrganization);
+      expect(network.mode, NetworkRequestMode.get);
+      expect(organization.addresses.single.city, 'Sydney');
+    },
+  );
+
+  test(
+    'updateCurrentOrganization sends the complete editable profile',
+    () async {
+      final network = _OrganizationNetworkRepository();
+      final repository = RemoteDatabaseImp(network);
+
+      final organization = await repository.updateCurrentOrganization(
+        request: const UpdateOrganizationProfileRequest(
+          name: 'Harbour Fresh Seafood',
+          legalName: 'Harbour Fresh Seafood Pty Ltd',
+          registrationNumber: 'ABN 12 345 678 901',
+          taxNumber: 'GST-12345',
+          contactName: 'Maya Chen',
+          contactEmail: 'accounts@harbourfresh.com',
+          contactPhone: '+61412345678',
+          defaultPaymentTerms: PaymentTerms.net30,
+        ),
+      );
+
+      expect(network.endpoint, APIEndpoint.currentOrganization);
+      expect(network.mode, NetworkRequestMode.patch);
+      expect(network.body, {
+        'name': 'Harbour Fresh Seafood',
+        'legalName': 'Harbour Fresh Seafood Pty Ltd',
+        'registrationNumber': 'ABN 12 345 678 901',
+        'taxNumber': 'GST-12345',
+        'contactName': 'Maya Chen',
+        'contactEmail': 'accounts@harbourfresh.com',
+        'contactPhone': '+61412345678',
+        'defaultPaymentTerms': 'NET_30',
+      });
+      expect(organization.name, 'Sydney Seafood Co.');
+    },
+  );
 }
 
 class _OrganizationNetworkRepository implements NetworkRepository {
   String? endpoint;
   Map<String, dynamic>? parameters;
   bool? returnFullResponse;
+  NetworkRequestMode? mode;
+  dynamic body;
 
   @override
   Future<dynamic> sendRequest(
@@ -73,6 +126,11 @@ class _OrganizationNetworkRepository implements NetworkRepository {
     this.endpoint = endpoint;
     this.parameters = parameters;
     this.returnFullResponse = returnFullResponse;
+    this.mode = mode;
+    this.body = body;
+    if (endpoint == APIEndpoint.currentOrganization) {
+      return mode == NetworkRequestMode.patch ? _organization : _detailResponse;
+    }
     return endpoint ==
             APIEndpoint.organizationById(_organization['id']! as String)
         ? _detailResponse

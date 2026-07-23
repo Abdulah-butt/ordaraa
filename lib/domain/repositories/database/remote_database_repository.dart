@@ -5,6 +5,8 @@ import '../../../network/request_model/request_phone_otp_request.dart';
 import '../../../network/request_model/verify_phone_otp_request.dart';
 import '../../../network/request_model/checkout_request.dart';
 import '../../../network/request_model/order_listing_request.dart';
+import '../../../network/request_model/update_organization_profile_request.dart';
+import '../../../network/request_model/update_user_profile_request.dart';
 import '../../../core/enums/address_type.dart';
 
 import '../../entities/auth_result.dart';
@@ -17,6 +19,7 @@ import '../../entities/product.dart';
 import '../../entities/address.dart';
 import '../../entities/checkout_preview.dart';
 import '../../entities/order.dart';
+import '../../entities/user.dart';
 
 abstract class RemoteDatabaseRepository {
   Future<void> requestPhoneOtp({required RequestPhoneOtpRequest request});
@@ -24,6 +27,8 @@ abstract class RemoteDatabaseRepository {
   Future<AuthResult> verifyPhoneOtp({required VerifyPhoneOtpRequest request});
 
   Future<AuthResult> getUserProfile();
+
+  Future<User> updateUserProfile({required UpdateUserProfileRequest request});
 
   Future<List<Market>> getMarkets();
 
@@ -40,6 +45,12 @@ abstract class RemoteDatabaseRepository {
   });
 
   Future<Organization> getOrganizationById({required String id});
+
+  Future<Organization> getCurrentOrganization();
+
+  Future<Organization> updateCurrentOrganization({
+    required UpdateOrganizationProfileRequest request,
+  });
 
   Future<List<Address>> getAddresses({AddressType? type});
 

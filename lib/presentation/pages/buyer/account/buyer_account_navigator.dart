@@ -5,8 +5,19 @@ import '../../../sheets/confirmation_sheet.dart';
 import '../../choose_role/choose_role_navigator.dart';
 import 'buyer_account_initial_params.dart';
 import 'buyer_account_page.dart';
+import '../../common/organization_profile/organization_profile_initial_params.dart';
+import '../../common/organization_profile/organization_profile_navigator.dart';
+import '../../common/personal_profile/personal_profile_initial_params.dart';
+import '../../common/personal_profile/personal_profile_navigator.dart';
+import '../../common/saved_addresses/saved_addresses_initial_params.dart';
+import '../../common/saved_addresses/saved_addresses_navigator.dart';
 
-class BuyerAccountNavigator with ChooseRoleRoute {
+class BuyerAccountNavigator
+    with
+        ChooseRoleRoute,
+        OrganizationProfileRoute,
+        PersonalProfileRoute,
+        SavedAddressesRoute {
   BuyerAccountNavigator(this.navigator);
 
   @override
@@ -49,6 +60,18 @@ class BuyerAccountNavigator with ChooseRoleRoute {
         ),
       ),
     );
+  }
+
+  void openOrganization() {
+    openOrganizationProfile(const OrganizationProfileInitialParams());
+  }
+
+  void openPersonal() {
+    openPersonalProfile(const PersonalProfileInitialParams());
+  }
+
+  void openAddresses() {
+    openSavedAddresses(const SavedAddressesInitialParams());
   }
 }
 

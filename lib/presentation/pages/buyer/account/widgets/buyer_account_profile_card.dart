@@ -9,11 +9,13 @@ class BuyerAccountProfileCard extends StatelessWidget {
     required this.displayName,
     required this.initials,
     required this.roleLabel,
+    required this.onEdit,
   });
 
   final String displayName;
   final String initials;
   final String roleLabel;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,19 @@ class BuyerAccountProfileCard extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            tooltip: 'Edit personal profile',
+            onPressed: onEdit,
+            style: IconButton.styleFrom(
+              minimumSize: const Size.square(40),
+              maximumSize: const Size.square(40),
+              backgroundColor: context.colorTheme.surface,
+              foregroundColor: context.colorTheme.primary,
+              side: BorderSide(color: context.colorTheme.outlineVariant),
+            ),
+            icon: const Icon(Icons.edit_outlined, size: 18),
           ),
         ],
       ),

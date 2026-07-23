@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/alert/app_snack_bar.dart';
 import '../../../../core/enums/membership_role.dart';
 import '../../../../domain/stores/user_store.dart';
+import '../../../../domain/entities/auth_result.dart';
 import '../../../../domain/usecases/logout_use_case.dart';
 import '../../choose_role/choose_role_initial_params.dart';
 import 'buyer_account_initial_params.dart';
@@ -21,9 +24,14 @@ class BuyerAccountCubit extends Cubit<BuyerAccountState> {
   final UserStore userStore;
   final LogoutUseCase logoutUseCase;
   final AppSnackBar snackBar;
+  StreamSubscription<AuthResult>? _userSubscription;
 
   void onInit(BuyerAccountInitialParams initialParams) {
-    final authResult = userStore.state;
+    _syncFromUserStore(userStore.state);
+    _userSubscription ??= userStore.stream.listen(_syncFromUserStore);
+  }
+
+  void _syncFromUserStore(AuthResult authResult) {
     final displayName = authResult.user?.displayName.trim() ?? '';
     final membership = authResult.memberships.firstOrNull;
 
@@ -60,6 +68,12 @@ class BuyerAccountCubit extends Cubit<BuyerAccountState> {
     navigator.showDeleteAccountConfirmation(onConfirm: _deleteAccount);
   }
 
+  void openOrganizationProfile() => navigator.openOrganization();
+
+  void openPersonalProfile() => navigator.openPersonal();
+
+  void openSavedAddresses() => navigator.openAddresses();
+
   void _deleteAccount() {
     snackBar.info('Account deletion is not available yet');
   }
@@ -77,5 +91,11 @@ class BuyerAccountCubit extends Cubit<BuyerAccountState> {
       MembershipRole.viewer => 'Buyer viewer',
       null => 'Buyer account',
     };
+  }
+
+  @override
+  Future<void> close() async {
+    await _userSubscription?.cancel();
+    return super.close();
   }
 }

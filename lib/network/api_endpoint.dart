@@ -20,4 +20,5 @@ class APIEndpoint {
   static const String createAccount = "/api/auth/create_account";
 
   static const String getProfile = "/api/v1/auth/me";
+  static const String updateUserProfile = '/api/v1/users/me';
 }

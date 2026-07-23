@@ -21,6 +21,9 @@ import '../domain/usecases/get_product_listings_use_case.dart';
 import '../domain/usecases/get_organizations_use_case.dart';
 import '../domain/usecases/get_product_by_id_use_case.dart';
 import '../domain/usecases/get_organization_by_id_use_case.dart';
+import '../domain/usecases/get_current_organization_use_case.dart';
+import '../domain/usecases/update_organization_profile_use_case.dart';
+import '../domain/usecases/update_user_profile_use_case.dart';
 import '../domain/usecases/logout_use_case.dart';
 import '../domain/usecases/request_phone_otp_use_case.dart';
 import '../domain/usecases/resolve_auth_flow_destination_use_case.dart';
@@ -112,6 +115,15 @@ class ServiceLocator {
     );
     getIt.registerSingleton<GetOrganizationByIdUseCase>(
       GetOrganizationByIdUseCase(getIt()),
+    );
+    getIt.registerSingleton<GetCurrentOrganizationUseCase>(
+      GetCurrentOrganizationUseCase(getIt()),
+    );
+    getIt.registerSingleton<UpdateOrganizationProfileUseCase>(
+      UpdateOrganizationProfileUseCase(getIt(), getIt()),
+    );
+    getIt.registerSingleton<UpdateUserProfileUseCase>(
+      UpdateUserProfileUseCase(getIt(), getIt()),
     );
     getIt.registerSingleton<AddToCartUseCase>(AddToCartUseCase(getIt()));
     getIt.registerSingleton<GetAddressesUseCase>(GetAddressesUseCase(getIt()));

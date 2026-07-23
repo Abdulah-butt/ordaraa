@@ -8,6 +8,7 @@ import '../../../domain/entities/product.dart';
 import '../../../domain/entities/address.dart';
 import '../../../domain/entities/checkout_preview.dart';
 import '../../../domain/entities/order.dart';
+import '../../../domain/entities/user.dart';
 import '../../../core/enums/address_type.dart';
 
 import '../../../domain/repositories/database/remote_database_repository.dart';
@@ -20,6 +21,8 @@ import '../../../network/request_model/request_phone_otp_request.dart';
 import '../../../network/request_model/verify_phone_otp_request.dart';
 import '../../../network/request_model/checkout_request.dart';
 import '../../../network/request_model/order_listing_request.dart';
+import '../../../network/request_model/update_organization_profile_request.dart';
+import '../../../network/request_model/update_user_profile_request.dart';
 import '../../models/auth_result_json.dart';
 import '../../models/category_json.dart';
 import '../../models/market_json.dart';
@@ -30,6 +33,7 @@ import '../../models/product_json.dart';
 import '../../models/address_json.dart';
 import '../../models/checkout_preview_json.dart';
 import '../../models/order_json.dart';
+import '../../models/user_json.dart';
 
 class RemoteDatabaseImp implements RemoteDatabaseRepository {
   final NetworkRepository _networkRepository;
@@ -68,10 +72,20 @@ class RemoteDatabaseImp implements RemoteDatabaseRepository {
   }
 
   @override
-  Future<List<Market>> getMarkets() async {
+  Future<User> updateUserProfile({
+    required UpdateUserProfileRequest request,
+  }) async {
     final response = await _networkRepository.sendRequest(
-      APIEndpoint.markets,
+      APIEndpoint.updateUserProfile,
+      mode: NetworkRequestMode.patch,
+      body: request.toJson(),
     );
+    return UserJson.fromJson(response as Map<String, dynamic>).toDomain();
+  }
+
+  @override
+  Future<List<Market>> getMarkets() async {
+    final response = await _networkRepository.sendRequest(APIEndpoint.markets);
     return (response as List)
         .map((data) => MarketJson.fromJson(data).toDomain())
         .toList();
@@ -129,6 +143,30 @@ class RemoteDatabaseImp implements RemoteDatabaseRepository {
   Future<Organization> getOrganizationById({required String id}) async {
     final response = await _networkRepository.sendRequest(
       APIEndpoint.organizationById(id),
+    );
+    return OrganizationJson.fromJson(
+      response as Map<String, dynamic>,
+    ).toDomain();
+  }
+
+  @override
+  Future<Organization> getCurrentOrganization() async {
+    final response = await _networkRepository.sendRequest(
+      APIEndpoint.currentOrganization,
+    );
+    return OrganizationJson.fromJson(
+      response as Map<String, dynamic>,
+    ).toDomain();
+  }
+
+  @override
+  Future<Organization> updateCurrentOrganization({
+    required UpdateOrganizationProfileRequest request,
+  }) async {
+    final response = await _networkRepository.sendRequest(
+      APIEndpoint.currentOrganization,
+      mode: NetworkRequestMode.patch,
+      body: request.toJson(),
     );
     return OrganizationJson.fromJson(
       response as Map<String, dynamic>,
