@@ -2,49 +2,49 @@ import 'package:equatable/equatable.dart';
 
 class BuyerAccountState extends Equatable {
   const BuyerAccountState({
-    required this.displayName,
     required this.initials,
     required this.organizationName,
-    required this.roleLabel,
+    required this.organizationSubtitle,
+    required this.organizationVerified,
     required this.isLoggingOut,
   });
 
-  final String displayName;
   final String initials;
   final String organizationName;
-  final String roleLabel;
+  final String organizationSubtitle;
+  final bool organizationVerified;
   final bool isLoggingOut;
 
   factory BuyerAccountState.initial() => const BuyerAccountState(
-    displayName: '',
     initials: '',
     organizationName: '',
-    roleLabel: '',
+    organizationSubtitle: '',
+    organizationVerified: false,
     isLoggingOut: false,
   );
 
   BuyerAccountState copyWith({
-    String? displayName,
     String? initials,
     String? organizationName,
-    String? roleLabel,
+    String? organizationSubtitle,
+    bool? organizationVerified,
     bool? isLoggingOut,
   }) {
     return BuyerAccountState(
-      displayName: displayName ?? this.displayName,
       initials: initials ?? this.initials,
       organizationName: organizationName ?? this.organizationName,
-      roleLabel: roleLabel ?? this.roleLabel,
+      organizationSubtitle: organizationSubtitle ?? this.organizationSubtitle,
+      organizationVerified: organizationVerified ?? this.organizationVerified,
       isLoggingOut: isLoggingOut ?? this.isLoggingOut,
     );
   }
 
   @override
   List<Object?> get props => [
-    displayName,
     initials,
     organizationName,
-    roleLabel,
+    organizationSubtitle,
+    organizationVerified,
     isLoggingOut,
   ];
 }

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/alert/app_snack_bar.dart';
-import '../../../../core/enums/membership_role.dart';
 import '../../../../domain/stores/user_store.dart';
 import '../../../../domain/entities/auth_result.dart';
 import '../../../../domain/usecases/logout_use_case.dart';
@@ -32,15 +31,18 @@ class BuyerAccountCubit extends Cubit<BuyerAccountState> {
   }
 
   void _syncFromUserStore(AuthResult authResult) {
-    final displayName = authResult.user?.displayName.trim() ?? '';
     final membership = authResult.memberships.firstOrNull;
+    final organization = membership?.organization;
+    final organizationName = organization?.name.trim() ?? '';
 
     emit(
       state.copyWith(
-        displayName: displayName,
-        initials: _initials(displayName),
-        organizationName: membership?.organization.name ?? '',
-        roleLabel: _roleLabel(membership?.membership.role),
+        initials: _initials(organizationName),
+        organizationName: organizationName,
+        organizationSubtitle: organization == null
+            ? ''
+            : '${organization.type.displayText} business • ${organization.market.name}',
+        organizationVerified: organization?.verified ?? false,
       ),
     );
   }
@@ -70,8 +72,6 @@ class BuyerAccountCubit extends Cubit<BuyerAccountState> {
 
   void openOrganizationProfile() => navigator.openOrganization();
 
-  void openPersonalProfile() => navigator.openPersonal();
-
   void openSavedAddresses() => navigator.openAddresses();
 
   void _deleteAccount() {
@@ -81,16 +81,6 @@ class BuyerAccountCubit extends Cubit<BuyerAccountState> {
   String _initials(String name) {
     final words = name.split(RegExp(r'\s+')).where((word) => word.isNotEmpty);
     return words.take(2).map((word) => word[0].toUpperCase()).join();
-  }
-
-  String _roleLabel(MembershipRole? role) {
-    return switch (role) {
-      MembershipRole.owner => 'Buyer owner',
-      MembershipRole.admin => 'Buyer administrator',
-      MembershipRole.member => 'Buyer member',
-      MembershipRole.viewer => 'Buyer viewer',
-      null => 'Buyer account',
-    };
   }
 
   @override

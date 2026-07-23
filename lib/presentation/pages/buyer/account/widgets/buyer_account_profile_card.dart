@@ -6,16 +6,16 @@ import '../../../../../core/theme/app_colors.dart';
 class BuyerAccountProfileCard extends StatelessWidget {
   const BuyerAccountProfileCard({
     super.key,
-    required this.displayName,
+    required this.businessName,
     required this.initials,
-    required this.roleLabel,
-    required this.onEdit,
+    required this.businessSubtitle,
+    required this.verified,
   });
 
-  final String displayName;
+  final String businessName;
   final String initials;
-  final String roleLabel;
-  final VoidCallback onEdit;
+  final String businessSubtitle;
+  final bool verified;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class BuyerAccountProfileCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    displayName,
+                    businessName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: context.textTheme.titleMedium?.copyWith(
@@ -69,7 +69,7 @@ class BuyerAccountProfileCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    roleLabel,
+                    businessSubtitle,
                     style: context.textTheme.labelSmall?.copyWith(
                       color: context.colorTheme.onSurfaceVariant,
                       height: 18 / 11,
@@ -79,19 +79,17 @@ class BuyerAccountProfileCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            tooltip: 'Edit personal profile',
-            onPressed: onEdit,
-            style: IconButton.styleFrom(
-              minimumSize: const Size.square(40),
-              maximumSize: const Size.square(40),
-              backgroundColor: context.colorTheme.surface,
-              foregroundColor: context.colorTheme.primary,
-              side: BorderSide(color: context.colorTheme.outlineVariant),
+          if (verified) ...[
+            const SizedBox(width: 8),
+            Tooltip(
+              message: 'Verified organization',
+              child: Icon(
+                Icons.verified_rounded,
+                size: 22,
+                color: context.colorTheme.primary,
+              ),
             ),
-            icon: const Icon(Icons.edit_outlined, size: 18),
-          ),
+          ],
         ],
       ),
     );

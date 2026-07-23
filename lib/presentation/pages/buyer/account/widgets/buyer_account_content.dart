@@ -13,7 +13,6 @@ class BuyerAccountContent extends StatelessWidget {
     required this.onLogout,
     required this.onDeleteAccount,
     required this.onOrganizationProfile,
-    required this.onPersonalProfile,
     required this.onSavedAddresses,
   });
 
@@ -21,7 +20,6 @@ class BuyerAccountContent extends StatelessWidget {
   final VoidCallback onLogout;
   final VoidCallback onDeleteAccount;
   final VoidCallback onOrganizationProfile;
-  final VoidCallback onPersonalProfile;
   final VoidCallback onSavedAddresses;
 
   @override
@@ -61,10 +59,10 @@ class BuyerAccountContent extends StatelessWidget {
             sliver: SliverList.list(
               children: [
                 BuyerAccountProfileCard(
-                  displayName: state.displayName,
+                  businessName: state.organizationName,
                   initials: state.initials,
-                  roleLabel: state.roleLabel,
-                  onEdit: onPersonalProfile,
+                  businessSubtitle: state.organizationSubtitle,
+                  verified: state.organizationVerified,
                 ),
                 const SizedBox(height: 12),
                 BuyerAccountSection(
