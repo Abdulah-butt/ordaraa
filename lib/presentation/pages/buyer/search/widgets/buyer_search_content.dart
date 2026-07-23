@@ -5,6 +5,9 @@ import '../../../../../core/extensions/theme_extension.dart';
 import '../../../../../core/utils/assets.dart';
 import '../../../../widgets/buyer_product_card.dart';
 import '../../../../widgets/buyer_supplier_card.dart';
+import '../../../../widgets/app_skeleton.dart';
+import '../../../../widgets/app_pull_to_refresh.dart';
+import '../../../../widgets/pinned_sliver_header.dart';
 import '../buyer_search_cubit.dart';
 import '../buyer_search_state.dart';
 
@@ -24,116 +27,173 @@ class BuyerSearchContent extends StatelessWidget {
     final selectedCategoryName = state.selectedCategory == 'all-products'
         ? null
         : cubit.selectedCategory?.name;
+    final visibleResultsAreEmpty = products
+        ? state.products.isEmpty
+        : state.suppliers.isEmpty;
     return SafeArea(
       bottom: false,
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-            sliver: SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: AppPullToRefresh(
+        onRefresh: cubit.pullToRefresh,
+        child: CustomScrollView(
+          controller: cubit.scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            PinnedSliverHeader(
+              height: 184,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      products ? 'Search' : 'Suppliers',
+                      style: context.textTheme.headlineMedium?.copyWith(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      products
+                          ? 'Find a product or browse a supplier’s catalogue.'
+                          : 'Verified businesses serving Sydney, NSW',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _SearchField(
+                      controller: cubit.searchController,
+                      hint: products
+                          ? 'Search products or suppliers'
+                          : 'Search business name',
+                      onChanged: cubit.onSearchChanged,
+                      onSubmitted: cubit.submitSearch,
+                    ),
+                    const SizedBox(height: 10),
+                    _SearchControls(
+                      state: state,
+                      onTypeSelected: cubit.selectResultType,
+                      onFilters: cubit.openFilters,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+              sliver: SliverList.list(
                 children: [
-                  Text(
-                    products ? 'Search' : 'Suppliers',
-                    style: context.textTheme.headlineMedium?.copyWith(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
+                  if (products && selectedCategoryName != null) ...[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: _SelectedCategoryChip(value: selectedCategoryName),
                     ),
+                    const SizedBox(height: 12),
+                  ],
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          products
+                              ? 'Products'
+                              : 'Suppliers serving this address',
+                          style: context.textTheme.titleLarge?.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '${state.totalCount} results',
+                        style: context.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    products
-                        ? 'Find a product or browse a supplier’s catalogue.'
-                        : 'Verified businesses serving Sydney, NSW',
-                    style: context.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w400,
+                  const SizedBox(height: 14),
+                  if (state.loadingResults && visibleResultsAreEmpty)
+                    AppSkeleton(
+                      child: Column(
+                        children: List.generate(
+                          3,
+                          (index) => Padding(
+                            padding: EdgeInsets.only(
+                              bottom: index == 2 ? 0 : 12,
+                            ),
+                            child: products
+                                ? const ProductCardSkeleton(detailed: true)
+                                : const SupplierCardSkeleton(detailed: true),
+                          ),
+                        ),
+                      ),
+                    )
+                  else if (products && state.products.isEmpty)
+                    const SizedBox(
+                      height: 180,
+                      child: Center(child: Text('No products found')),
+                    )
+                  else if (products)
+                    for (var i = 0; i < state.products.length; i++) ...[
+                      BuyerProductCard(
+                        product: state.products[i],
+                        layout: BuyerProductCardLayout.detailed,
+                        onTap: () =>
+                            cubit.navigator.openProduct(state.products[i].id),
+                        onAdd: () => cubit.addProduct(state.products[i]),
+                      ),
+                      if (i != state.products.length - 1)
+                        const SizedBox(height: 12),
+                    ]
+                  else if (state.suppliers.isEmpty)
+                    const SizedBox(
+                      height: 180,
+                      child: Center(child: Text('No suppliers found')),
+                    )
+                  else
+                    for (var i = 0; i < state.suppliers.length; i++) ...[
+                      BuyerSupplierCard(
+                        supplier: state.suppliers[i],
+                        layout: BuyerSupplierCardLayout.detailed,
+                        onTap: () =>
+                            cubit.navigator.openSeller(state.suppliers[i].id),
+                      ),
+                      if (i != state.suppliers.length - 1)
+                        const SizedBox(height: 14),
+                    ],
+                  if (state.loadingMore) ...[
+                    const SizedBox(height: 18),
+                    AppSkeleton(
+                      child: products
+                          ? const ProductCardSkeleton(detailed: true)
+                          : const SupplierCardSkeleton(detailed: true),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
-            sliver: SliverList.list(
-              children: [
-                _SearchField(
-                  controller: cubit.searchController,
-                  hint: products
-                      ? 'Search products or suppliers'
-                      : 'Search business name',
-                ),
-                const SizedBox(height: 12),
-                _SearchControls(
-                  state: state,
-                  onTypeSelected: cubit.selectResultType,
-                  onFilters: cubit.openFilters,
-                ),
-                if (products && selectedCategoryName != null) ...[
-                  const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: _SelectedCategoryChip(value: selectedCategoryName),
-                  ),
-                ],
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        products
-                            ? 'Products'
-                            : 'Suppliers serving this address',
-                        style: context.textTheme.titleLarge?.copyWith(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      products
-                          ? '${state.resultCount} results'
-                          : '${state.suppliers.length} verified',
-                      style: context.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                if (products)
-                  for (var i = 0; i < state.products.length; i++) ...[
-                    BuyerProductCard(
-                      product: state.products[i],
-                      layout: BuyerProductCardLayout.detailed,
-                    ),
-                    if (i != state.products.length - 1)
-                      const SizedBox(height: 12),
-                  ]
-                else
-                  for (var i = 0; i < state.suppliers.length; i++) ...[
-                    BuyerSupplierCard(
-                      supplier: state.suppliers[i],
-                      layout: BuyerSupplierCardLayout.detailed,
-                    ),
-                    if (i != state.suppliers.length - 1)
-                      const SizedBox(height: 14),
-                  ],
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class _SearchField extends StatelessWidget {
-  const _SearchField({required this.controller, required this.hint});
+  const _SearchField({
+    required this.controller,
+    required this.hint,
+    required this.onChanged,
+    required this.onSubmitted,
+  });
 
   final TextEditingController controller;
   final String hint;
+  final ValueChanged<String> onChanged;
+  final ValueChanged<String> onSubmitted;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -141,6 +201,8 @@ class _SearchField extends StatelessWidget {
     child: TextField(
       controller: controller,
       textInputAction: TextInputAction.search,
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
       style: context.textTheme.bodyMedium,
       decoration: InputDecoration(
         hintText: hint,

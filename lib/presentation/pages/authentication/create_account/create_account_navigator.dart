@@ -15,10 +15,7 @@ mixin CreateAccountRoute {
   openCreateAccount(CreateAccountInitialParams initialParams) {
     final queryString = initialParams.toQueryString();
 
-    navigator.push(
-      context,
-      "${CreateAccountPage.path}?$queryString",
-    );
+    navigator.push(context, "${CreateAccountPage.path}?$queryString");
   }
 
   AppNavigator get navigator;

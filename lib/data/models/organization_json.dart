@@ -4,9 +4,10 @@ import '../../core/enums/payment_terms.dart';
 import '../../domain/entities/organization.dart';
 import 'image_resource_json.dart';
 import 'market_json.dart';
+import 'address_json.dart';
 
 class OrganizationJson {
-  const OrganizationJson({
+  OrganizationJson({
     required this.id,
     required this.publicCode,
     required this.name,
@@ -23,7 +24,8 @@ class OrganizationJson {
     required this.contactPhone,
     required this.defaultPaymentTerms,
     required this.createdAt,
-  });
+    List<AddressJson> addresses = const [],
+  }) : addresses = List.unmodifiable(addresses);
 
   final String id;
   final String publicCode;
@@ -41,6 +43,7 @@ class OrganizationJson {
   final String? contactPhone;
   final PaymentTerms? defaultPaymentTerms;
   final DateTime createdAt;
+  final List<AddressJson> addresses;
 
   factory OrganizationJson.fromJson(Map<String, dynamic> json) {
     final logoJson = json['logo'];
@@ -66,6 +69,11 @@ class OrganizationJson {
           ? null
           : PaymentTerms.fromApiValue(paymentTermsValue),
       createdAt: DateTime.parse(json['createdAt'] as String),
+      addresses: (json['addresses'] as List<dynamic>? ?? const [])
+          .map(
+            (address) => AddressJson.fromJson(address as Map<String, dynamic>),
+          )
+          .toList(growable: false),
     );
   }
 
@@ -86,6 +94,9 @@ class OrganizationJson {
     'contactPhone': contactPhone,
     'defaultPaymentTerms': defaultPaymentTerms?.apiValue,
     'createdAt': createdAt.toUtc().toIso8601String(),
+    'addresses': addresses
+        .map((address) => address.toJson())
+        .toList(growable: false),
   };
 
   Organization toDomain() => Organization(
@@ -105,5 +116,8 @@ class OrganizationJson {
     contactPhone: contactPhone,
     defaultPaymentTerms: defaultPaymentTerms,
     createdAt: createdAt,
+    addresses: addresses
+        .map((address) => address.toDomain())
+        .toList(growable: false),
   );
 }

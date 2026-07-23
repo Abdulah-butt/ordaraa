@@ -5,12 +5,26 @@ import 'buyer_search_initial_params.dart';
 import 'buyer_search_page.dart';
 import 'buyer_search_cubit.dart';
 import 'widgets/buyer_search_filter_sheet.dart';
+import '../product_detail/product_detail_initial_params.dart';
+import '../product_detail/product_detail_navigator.dart';
+import '../seller_detail/seller_detail_initial_params.dart';
+import '../seller_detail/seller_detail_navigator.dart';
 
-class BuyerSearchNavigator {
+class BuyerSearchNavigator with ProductDetailRoute, SellerDetailRoute {
   BuyerSearchNavigator(this.navigator);
 
+  @override
   late BuildContext context;
+  @override
   final AppNavigator navigator;
+
+  void openProduct(String productId) {
+    openProductDetail(ProductDetailInitialParams(productId: productId));
+  }
+
+  void openSeller(String sellerId) {
+    openSellerDetail(SellerDetailInitialParams(sellerId: sellerId));
+  }
 
   void showProductFilters({required BuyerSearchCubit cubit}) {
     navigator.showBottomSheet(

@@ -12,5 +12,3 @@ int toInt(dynamic value) {
     return 0; // or throw ArgumentError("Invalid number format");
   }
 }
-
-

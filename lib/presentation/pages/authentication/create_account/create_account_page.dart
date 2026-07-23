@@ -58,10 +58,7 @@ class _CreateAccountState extends State<CreateAccountPage> {
               padding: const EdgeInsets.symmetric(horizontal: kScreenPadding),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.person_3_outlined,
-                    size: 50,
-                  ),
+                  Icon(Icons.person_3_outlined, size: 50),
                   Text(
                     "Create New Account",
                     style: AppStyle.authHeading(context),

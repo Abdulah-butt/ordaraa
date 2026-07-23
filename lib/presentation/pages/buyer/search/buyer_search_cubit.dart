@@ -1,21 +1,49 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/utils/assets.dart';
+import '../../../../core/alert/app_snack_bar.dart';
+import '../../../../core/extensions/add_to_cart_result_extension.dart';
+import '../../../../core/enums/stock_status.dart';
 import '../../../../domain/entities/category.dart';
+import '../../../../domain/entities/organization.dart';
+import '../../../../domain/entities/paginated_result.dart';
+import '../../../../domain/entities/product.dart';
 import '../../../../domain/stores/category_store.dart';
-import '../../../view_data/buyer_catalog_view_data.dart';
+import '../../../../domain/usecases/get_organizations_use_case.dart';
+import '../../../../domain/usecases/get_product_listings_use_case.dart';
+import '../../../../domain/usecases/add_to_cart_use_case.dart';
+import '../../../../network/request_model/organization_listing_request.dart';
+import '../../../../network/request_model/product_listing_request.dart';
 import 'buyer_search_initial_params.dart';
 import 'buyer_search_navigator.dart';
 import 'buyer_search_state.dart';
 
 class BuyerSearchCubit extends Cubit<BuyerSearchState> {
-  BuyerSearchCubit({required this.navigator, required this.categoryStore})
-    : super(BuyerSearchState.initial());
+  BuyerSearchCubit({
+    required this.navigator,
+    required this.categoryStore,
+    required this.getProductListingsUseCase,
+    required this.getOrganizationsUseCase,
+    required this.addToCartUseCase,
+    required this.snackBar,
+  }) : super(BuyerSearchState.initial());
+
+  static const _pageSize = 10;
+  static const _searchDebounce = Duration(milliseconds: 400);
 
   final BuyerSearchNavigator navigator;
   final CategoryStore categoryStore;
+  final GetProductListingsUseCase getProductListingsUseCase;
+  final GetOrganizationsUseCase getOrganizationsUseCase;
+  final AddToCartUseCase addToCartUseCase;
+  final AppSnackBar snackBar;
   final searchController = TextEditingController();
+  final scrollController = ScrollController();
+  Timer? _searchTimer;
+  int _requestGeneration = 0;
+  bool _initialized = false;
 
   List<Category> get categories => categoryStore.state.categories;
 
@@ -24,72 +52,298 @@ class BuyerSearchCubit extends Cubit<BuyerSearchState> {
       .firstOrNull;
 
   void onInit(BuyerSearchInitialParams initialParams) {
+    _searchTimer?.cancel();
+    scrollController
+      ..removeListener(_onScroll)
+      ..addListener(_onScroll);
+    if (!_initialized) {
+      _initialized = true;
+      emit(
+        state.copyWith(
+          selectedCategory: initialParams.categorySlug ?? 'all-products',
+          resultType: initialParams.showSuppliers
+              ? BuyerSearchResultType.suppliers
+              : BuyerSearchResultType.products,
+        ),
+      );
+      unawaited(_initialize());
+      return;
+    }
+
+    if (initialParams.categorySlug != null) {
+      searchController.clear();
+      emit(
+        state.copyWith(
+          resultType: BuyerSearchResultType.products,
+          selectedCategory: initialParams.categorySlug,
+        ),
+      );
+    } else if (initialParams.showSuppliers) {
+      emit(state.copyWith(resultType: BuyerSearchResultType.suppliers));
+    }
+    if (!_hasValidCurrentCache) {
+      unawaited(refreshResults());
+    }
+  }
+
+  Future<void> _initialize() async {
+    if (categoryStore.state.categories.isEmpty) {
+      try {
+        await categoryStore.loadCategories();
+      } catch (error) {
+        snackBar.error(error.toString());
+      }
+    }
+    if (!_hasValidCurrentCache) {
+      await refreshResults();
+    }
+  }
+
+  void selectResultType(BuyerSearchResultType type) {
+    if (state.resultType == type) return;
+    _requestGeneration++;
     emit(
       state.copyWith(
-        products: _products,
-        suppliers: _suppliers,
-        selectedCategory: initialParams.categorySlug ?? 'all-products',
-        resultType: BuyerSearchResultType.products,
+        resultType: type,
+        loadingResults: false,
+        loadingMore: false,
+      ),
+    );
+    if (!_hasValidCurrentCache) {
+      unawaited(refreshResults());
+    }
+  }
+
+  void selectCategory(String value) {
+    emit(state.copyWith(selectedCategory: value));
+  }
+
+  void setInStockOnly(bool value) {
+    emit(state.copyWith(inStockOnly: value));
+  }
+
+  void resetFilters() {
+    emit(state.copyWith(selectedCategory: 'all-products', inStockOnly: false));
+  }
+
+  void applyFilters() {
+    unawaited(refreshResults());
+  }
+
+  void onSearchChanged(String value) {
+    _searchTimer?.cancel();
+    _searchTimer = Timer(_searchDebounce, refreshResults);
+  }
+
+  void submitSearch(String value) {
+    _searchTimer?.cancel();
+    unawaited(refreshResults());
+  }
+
+  void openFilters() => navigator.showProductFilters(cubit: this);
+
+  void addProduct(Product product) {
+    addToCartUseCase.execute(product: product).showFeedback(snackBar);
+  }
+
+  Future<void> pullToRefresh() => refreshResults(preserveExisting: true);
+
+  Future<void> refreshResults({bool preserveExisting = false}) async {
+    final generation = ++_requestGeneration;
+    final productResults = state.resultType == BuyerSearchResultType.products;
+    final signature = _signatureFor(state.resultType);
+    emit(
+      state.copyWith(
+        loadingResults: true,
+        loadingMore: false,
+        products: productResults && !preserveExisting
+            ? const []
+            : state.products,
+        suppliers: !productResults && !preserveExisting
+            ? const []
+            : state.suppliers,
+        productHasNextPage: productResults && !preserveExisting
+            ? false
+            : state.productHasNextPage,
+        productLoadedItemCount: productResults
+            ? preserveExisting
+                  ? state.productLoadedItemCount
+                  : 0
+            : state.productLoadedItemCount,
+        productTotalCount: productResults && !preserveExisting
+            ? 0
+            : state.productTotalCount,
+        productTotalPages: productResults && !preserveExisting
+            ? 0
+            : state.productTotalPages,
+        supplierHasNextPage: !productResults && !preserveExisting
+            ? false
+            : state.supplierHasNextPage,
+        supplierLoadedItemCount: productResults
+            ? state.supplierLoadedItemCount
+            : preserveExisting
+            ? state.supplierLoadedItemCount
+            : 0,
+        supplierTotalCount: !productResults && !preserveExisting
+            ? 0
+            : state.supplierTotalCount,
+        supplierTotalPages: !productResults && !preserveExisting
+            ? 0
+            : state.supplierTotalPages,
+      ),
+    );
+    try {
+      if (productResults) {
+        final result = await _fetchProducts(offset: 0);
+        if (generation != _requestGeneration) return;
+        emit(
+          state.copyWith(
+            products: _applyAvailabilityFilter(result.items),
+            productLoadedItemCount: result.items.length,
+            productHasNextPage: result.hasNextPage,
+            productTotalCount: result.totalCount ?? result.items.length,
+            productTotalPages: result.totalPages ?? _fallbackTotalPages(result),
+            productSignature: signature,
+          ),
+        );
+      } else {
+        final result = await _fetchOrganizations(offset: 0);
+        if (generation != _requestGeneration) return;
+        emit(
+          state.copyWith(
+            suppliers: result.items,
+            supplierLoadedItemCount: result.items.length,
+            supplierHasNextPage: result.hasNextPage,
+            supplierTotalCount: result.totalCount ?? result.items.length,
+            supplierTotalPages:
+                result.totalPages ?? _fallbackTotalPages(result),
+            supplierSignature: signature,
+          ),
+        );
+      }
+    } catch (error) {
+      if (generation == _requestGeneration) {
+        snackBar.error(error.toString());
+      }
+    } finally {
+      if (generation == _requestGeneration) {
+        emit(state.copyWith(loadingResults: false));
+      }
+    }
+  }
+
+  Future<void> loadMore() async {
+    if (state.loadingResults || state.loadingMore || !state.hasNextPage) {
+      return;
+    }
+    final generation = _requestGeneration;
+    emit(state.copyWith(loadingMore: true));
+    try {
+      if (state.resultType == BuyerSearchResultType.products) {
+        final result = await _fetchProducts(offset: state.loadedItemCount);
+        if (generation != _requestGeneration) return;
+        emit(
+          state.copyWith(
+            products: [
+              ...state.products,
+              ..._applyAvailabilityFilter(result.items),
+            ],
+            productLoadedItemCount:
+                state.productLoadedItemCount + result.items.length,
+            productHasNextPage: result.hasNextPage,
+            productTotalCount: result.totalCount ?? state.productTotalCount,
+            productTotalPages: result.totalPages ?? state.productTotalPages,
+          ),
+        );
+      } else {
+        final result = await _fetchOrganizations(offset: state.loadedItemCount);
+        if (generation != _requestGeneration) return;
+        emit(
+          state.copyWith(
+            suppliers: [...state.suppliers, ...result.items],
+            supplierLoadedItemCount:
+                state.supplierLoadedItemCount + result.items.length,
+            supplierHasNextPage: result.hasNextPage,
+            supplierTotalCount: result.totalCount ?? state.supplierTotalCount,
+            supplierTotalPages: result.totalPages ?? state.supplierTotalPages,
+          ),
+        );
+      }
+    } catch (error) {
+      if (generation == _requestGeneration) {
+        snackBar.error(error.toString());
+      }
+    } finally {
+      if (generation == _requestGeneration) {
+        emit(state.copyWith(loadingMore: false));
+      }
+    }
+  }
+
+  Future<PaginatedResult<Organization>> _fetchOrganizations({
+    required int offset,
+  }) {
+    return getOrganizationsUseCase.execute(
+      request: OrganizationListingRequest(
+        limit: _pageSize,
+        offset: offset,
+        query: searchController.text,
       ),
     );
   }
 
-  void selectResultType(BuyerSearchResultType type) =>
-      emit(state.copyWith(resultType: type));
-  void selectCategory(String value) =>
-      emit(state.copyWith(selectedCategory: value));
-  void setInStockOnly(bool value) => emit(state.copyWith(inStockOnly: value));
-  void resetFilters() =>
-      emit(state.copyWith(selectedCategory: 'all-products', inStockOnly: true));
-  void openFilters() => navigator.showProductFilters(cubit: this);
+  int _fallbackTotalPages<T>(PaginatedResult<T> result) {
+    final count = result.totalCount ?? result.items.length;
+    return (count / result.limit).ceil();
+  }
 
-  void dispose() => searchController.clear();
+  bool get _hasValidCurrentCache {
+    final type = state.resultType;
+    final hasItems = type == BuyerSearchResultType.products
+        ? state.products.isNotEmpty
+        : state.suppliers.isNotEmpty;
+    final signature = type == BuyerSearchResultType.products
+        ? state.productSignature
+        : state.supplierSignature;
+    return hasItems && signature == _signatureFor(type);
+  }
 
-  static const _products = [
-    BuyerProductViewData(
-      name: 'Atlantic Salmon Portions',
-      imageAsset: Assets.buyerSearchSalmon,
-      availability: BuyerProductAvailability.available,
-      supplier: 'Sydney Seafood Co. · Verified',
-      packaging: '10 kg case · Minimum 5 cases',
-      price: 'AUD 84.00 / case',
-    ),
-    BuyerProductViewData(
-      name: 'Australian King Prawns',
-      imageAsset: Assets.buyerSearchPrawns,
-      availability: BuyerProductAvailability.lowStock,
-      supplier: 'Harbour Catch · Verified',
-      packaging: '5 kg case · Minimum 3 cases',
-      price: 'AUD 96.00 / case',
-    ),
-    BuyerProductViewData(
-      name: 'Premium Sydney Oysters',
-      imageAsset: Assets.buyerSearchOysters,
-      availability: BuyerProductAvailability.outOfStock,
-      supplier: 'Coastal Shellfish · Verified',
-      packaging: '12 dozen carton · Minimum 2 cartons',
-      price: 'AUD 118.00 / carton',
-    ),
-  ];
+  String _signatureFor(BuyerSearchResultType type) {
+    final query = searchController.text.trim().toLowerCase();
+    if (type == BuyerSearchResultType.suppliers) return query;
+    return [query, state.selectedCategory, state.inStockOnly].join('|');
+  }
 
-  static const _suppliers = [
-    BuyerSupplierViewData(
-      name: 'Sydney Seafood Co.',
-      serviceArea: 'Greater Sydney Area',
-      deliveryDetails: 'Delivery & pickup · 1–2 days',
-      catalogSummary: '42 products · Minimum order AUD 250',
-    ),
-    BuyerSupplierViewData(
-      name: 'Harbour Catch Wholesale',
-      serviceArea: 'Sydney & Northern Beaches',
-      deliveryDetails: 'Delivery · Next business day',
-      catalogSummary: '28 products · Minimum order AUD 180',
-    ),
-    BuyerSupplierViewData(
-      name: 'Coastal Shellfish Co.',
-      serviceArea: 'Sydney & Wollongong',
-      deliveryDetails: 'Delivery & pickup · 2 days',
-      catalogSummary: '18 products · Minimum order AUD 200',
-    ),
-  ];
+  Future<PaginatedResult<Product>> _fetchProducts({required int offset}) {
+    final category = selectedCategory;
+    return getProductListingsUseCase.execute(
+      request: ProductListingRequest(
+        limit: _pageSize,
+        offset: offset,
+        query: searchController.text,
+        categoryId: category == null || category.slug == 'all-products'
+            ? null
+            : category.id,
+      ),
+    );
+  }
+
+  List<Product> _applyAvailabilityFilter(List<Product> products) {
+    if (!state.inStockOnly) return products;
+    return products
+        .where((product) => product.stockStatus == StockStatus.inStock)
+        .toList(growable: false);
+  }
+
+  void _onScroll() {
+    if (!scrollController.hasClients) return;
+    if (scrollController.position.extentAfter < 240) {
+      unawaited(loadMore());
+    }
+  }
+
+  void dispose() {
+    _searchTimer?.cancel();
+    scrollController.removeListener(_onScroll);
+  }
 }

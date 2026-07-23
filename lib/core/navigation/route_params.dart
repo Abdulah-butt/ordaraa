@@ -8,9 +8,9 @@ abstract class RouteParams {
   }
 
   static T fromQueryString<T extends RouteParams>(
-      String queryString,
-      T Function(Map<String, dynamic>) fromMap
-      ) {
+    String queryString,
+    T Function(Map<String, dynamic>) fromMap,
+  ) {
     final params = Uri.splitQueryString(queryString);
     return fromMap(params);
   }

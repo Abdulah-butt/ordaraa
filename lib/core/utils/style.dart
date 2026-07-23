@@ -35,12 +35,11 @@ abstract final class AppStyle {
   static TextStyle textFieldTextStyle(
     BuildContext context, {
     bool isDisabled = false,
-  }) =>
-      (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
-        color: isDisabled
-            ? context.ordaraColors.textDisabled
-            : context.colorTheme.onSurface,
-      );
+  }) => (context.textTheme.bodyLarge ?? const TextStyle()).copyWith(
+    color: isDisabled
+        ? context.ordaraColors.textDisabled
+        : context.colorTheme.onSurface,
+  );
 
   static EdgeInsetsGeometry centeredContentPadding({
     required double height,
@@ -85,7 +84,8 @@ abstract final class AppStyle {
       hintFadeDuration: hintFadeDuration,
       filled: true,
       fillColor: fillColor ?? context.colorTheme.surface,
-      contentPadding: contentPadding ??
+      contentPadding:
+          contentPadding ??
           centeredContentPadding(
             height: AppSizes.textFieldHeight,
             textStyle: context.textTheme.bodyLarge,
@@ -190,31 +190,27 @@ abstract final class AppStyle {
       );
 
   /// Dark scrim over supplier/product imagery for legible overlay text.
-  static LinearGradient imageTopOverlay(BuildContext context) =>
-      LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Colors.black.withValues(alpha: 0.70),
-          Colors.transparent,
-        ],
-        stops: const [0, 1],
-      );
+  static LinearGradient imageTopOverlay(BuildContext context) => LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Colors.black.withValues(alpha: 0.70), Colors.transparent],
+    stops: const [0, 1],
+  );
 
   static List<BoxShadow> cardShadow(BuildContext context) => [
-        BoxShadow(
-          color: context.colorTheme.shadow.withValues(
-            alpha: context.isDarkMode ? 0.28 : 0.08,
-          ),
-          blurRadius: 18,
-          offset: const Offset(0, 6),
-        ),
-      ];
+    BoxShadow(
+      color: context.colorTheme.shadow.withValues(
+        alpha: context.isDarkMode ? 0.28 : 0.08,
+      ),
+      blurRadius: 18,
+      offset: const Offset(0, 6),
+    ),
+  ];
 
   static BoxDecoration elevatedSurface(BuildContext context) => BoxDecoration(
-        color: context.ordaraColors.surfaceElevated,
-        borderRadius: AppRadius.card,
-        border: Border.all(color: context.ordaraColors.borderSubtle),
-        boxShadow: cardShadow(context),
-      );
+    color: context.ordaraColors.surfaceElevated,
+    borderRadius: AppRadius.card,
+    border: Border.all(color: context.ordaraColors.borderSubtle),
+    boxShadow: cardShadow(context),
+  );
 }

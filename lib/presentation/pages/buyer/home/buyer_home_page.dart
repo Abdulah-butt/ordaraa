@@ -43,6 +43,13 @@ class _BuyerHomePageState extends State<BuyerHomePage> {
             categoryStore: cubit.categoryStore,
             onCategorySelected: cubit.selectCategory,
             onViewAllCategories: cubit.viewAllCategories,
+            onViewAllProducts: cubit.viewAllProducts,
+            onViewAllSuppliers: cubit.viewAllSuppliers,
+            onRefresh: cubit.refresh,
+            onProductSelected: cubit.openProduct,
+            onProductAdd: cubit.addProduct,
+            onSellerSelected: cubit.openSeller,
+            onCartTap: cubit.openCart,
           ),
         );
       },

@@ -7,8 +7,14 @@ import '../domain/repositories/database/local_database_repository.dart';
 import '../domain/repositories/database/remote_database_repository.dart';
 import '../domain/stores/user_store.dart';
 import '../domain/stores/category_store.dart';
+import '../domain/stores/cart_store.dart';
 import '../domain/stores/market_store.dart';
+import '../domain/usecases/add_to_cart_use_case.dart';
 import '../domain/usecases/login_use_case.dart';
+import '../domain/usecases/get_product_listings_use_case.dart';
+import '../domain/usecases/get_organizations_use_case.dart';
+import '../domain/usecases/get_product_by_id_use_case.dart';
+import '../domain/usecases/get_organization_by_id_use_case.dart';
 import '../domain/usecases/logout_use_case.dart';
 import '../domain/usecases/request_phone_otp_use_case.dart';
 import '../domain/usecases/register_buyer_organization_use_case.dart';
@@ -51,6 +57,7 @@ class ServiceLocator {
     getIt.registerSingleton<UserStore>(UserStore());
     getIt.registerSingleton<MarketStore>(MarketStore(getIt()));
     getIt.registerSingleton<CategoryStore>(CategoryStore(getIt()));
+    getIt.registerSingleton<CartStore>(CartStore());
 
     /// use_cases
     ///
@@ -72,6 +79,19 @@ class ServiceLocator {
     getIt.registerSingleton<RequestPhoneOtpUseCase>(
       RequestPhoneOtpUseCase(getIt()),
     );
+    getIt.registerSingleton<GetProductListingsUseCase>(
+      GetProductListingsUseCase(getIt()),
+    );
+    getIt.registerSingleton<GetOrganizationsUseCase>(
+      GetOrganizationsUseCase(getIt()),
+    );
+    getIt.registerSingleton<GetProductByIdUseCase>(
+      GetProductByIdUseCase(getIt()),
+    );
+    getIt.registerSingleton<GetOrganizationByIdUseCase>(
+      GetOrganizationByIdUseCase(getIt()),
+    );
+    getIt.registerSingleton<AddToCartUseCase>(AddToCartUseCase(getIt()));
     getIt.registerSingleton<RegisterBuyerOrganizationUseCase>(
       RegisterBuyerOrganizationUseCase(getIt(), getIt(), getIt()),
     );

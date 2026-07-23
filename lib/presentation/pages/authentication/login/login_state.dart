@@ -7,7 +7,7 @@ class LoginState {
       const LoginState(loading: false, isPasswordVisible: false);
 
   LoginState copyWith({bool? loading, bool? isPasswordVisible}) => LoginState(
-        loading: loading ?? this.loading,
-        isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
-      );
+    loading: loading ?? this.loading,
+    isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
+  );
 }

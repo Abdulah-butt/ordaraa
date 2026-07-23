@@ -11,10 +11,7 @@ extension LaunchUrl on String {
   }
 
   void launchPhoneNumber() {
-    final Uri callUri = Uri(
-      scheme: 'tel',
-      path: this,
-    );
+    final Uri callUri = Uri(scheme: 'tel', path: this);
     launchUrl(callUri);
   }
 
@@ -30,10 +27,11 @@ extension LaunchUrl on String {
   }
 
   Future<void> launchWhatsApp() async {
-    // Check for WhatsApp capability
-    // Note: WhatsApp URL scheme might vary based on platform and installation
-    final whatsappUrlAndroid = Uri.parse("whatsapp://send?phone=$this");
-    final whatsappUrlIOS = Uri.parse("https://wa.me/$this");
+    final normalizedPhone = replaceAll(RegExp(r'[^0-9]'), '');
+    final whatsappUrlAndroid = Uri.parse(
+      'whatsapp://send?phone=$normalizedPhone',
+    );
+    final whatsappUrlIOS = Uri.parse('https://wa.me/$normalizedPhone');
     if (await canLaunchUrl(whatsappUrlAndroid)) {
       await launchUrl(whatsappUrlAndroid);
     } else if (await canLaunchUrl(whatsappUrlIOS)) {
@@ -41,6 +39,15 @@ extension LaunchUrl on String {
     } else {
       // Handle unsupported WhatsApp
       throw Exception('Could not launch WhatsApp');
+    }
+  }
+
+  Future<void> launchEmail() async {
+    final emailUri = Uri(scheme: 'mailto', path: trim());
+    if (await canLaunchUrl(emailUri)) {
+      await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+    } else {
+      throw Exception('Could not open the email app');
     }
   }
 

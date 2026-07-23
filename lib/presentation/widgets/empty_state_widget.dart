@@ -75,11 +75,7 @@ class _EmptyStateWidgetState extends State<EmptyStateWidget>
                 shape: BoxShape.circle,
                 color: colorScheme.secondary.withValues(alpha: 0.12),
               ),
-              child: Icon(
-                widget.icon,
-                color: colorScheme.secondary,
-                size: 28,
-              ),
+              child: Icon(widget.icon, color: colorScheme.secondary, size: 28),
             ),
             const SizedBox(width: 14),
             Expanded(

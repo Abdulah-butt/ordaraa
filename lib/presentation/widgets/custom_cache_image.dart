@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+
+import 'app_skeleton.dart';
 
 class CustomCacheImage extends StatelessWidget {
   final String imgUrl;
@@ -26,15 +27,8 @@ class CustomCacheImage extends StatelessWidget {
       fadeOutDuration: Duration.zero,
       useOldImageOnUrlChange: true,
       errorWidget: (child, url, obj) => Icon(Icons.broken_image_outlined),
-      progressIndicatorBuilder:
-          (child, url, progress) => Skeletonizer(
-            enabled: true,
-            child: Container(
-              width: width,
-              height: height,
-              color: Colors.grey[300],
-            ),
-          ),
+      progressIndicatorBuilder: (child, url, progress) =>
+          AppSkeletonBox(width: width, height: height),
     );
   }
 }

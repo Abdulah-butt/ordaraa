@@ -18,12 +18,18 @@ import '../presentation/pages/buyer/account/buyer_account_cubit.dart';
 import '../presentation/pages/buyer/account/buyer_account_navigator.dart';
 import '../presentation/pages/buyer/categories/buyer_categories_cubit.dart';
 import '../presentation/pages/buyer/categories/buyer_categories_navigator.dart';
+import '../presentation/pages/buyer/cart/cart_cubit.dart';
+import '../presentation/pages/buyer/cart/cart_navigator.dart';
 import '../presentation/pages/buyer/home/buyer_home_cubit.dart';
 import '../presentation/pages/buyer/home/buyer_home_navigator.dart';
 import '../presentation/pages/buyer/orders/buyer_orders_cubit.dart';
 import '../presentation/pages/buyer/orders/buyer_orders_navigator.dart';
+import '../presentation/pages/buyer/product_detail/product_detail_cubit.dart';
+import '../presentation/pages/buyer/product_detail/product_detail_navigator.dart';
 import '../presentation/pages/buyer/search/buyer_search_cubit.dart';
 import '../presentation/pages/buyer/search/buyer_search_navigator.dart';
+import '../presentation/pages/buyer/seller_detail/seller_detail_cubit.dart';
+import '../presentation/pages/buyer/seller_detail/seller_detail_navigator.dart';
 import '../presentation/pages/splash/splash_cubit.dart';
 import '../presentation/pages/splash/splash_navigator.dart';
 import 'service_locator.dart';
@@ -122,7 +128,14 @@ class AppCubits {
         navigator: getIt(),
         categoryStore: getIt(),
         snackBar: getIt(),
+        getProductListingsUseCase: getIt(),
+        getOrganizationsUseCase: getIt(),
+        addToCartUseCase: getIt(),
       ),
+    );
+    getIt.registerSingleton<CartNavigator>(CartNavigator(getIt()));
+    getIt.registerSingleton<CartCubit>(
+      CartCubit(navigator: getIt(), cartStore: getIt(), snackBar: getIt()),
     );
     getIt.registerSingleton<BuyerCategoriesNavigator>(
       BuyerCategoriesNavigator(getIt()),
@@ -138,7 +151,37 @@ class AppCubits {
       BuyerSearchNavigator(getIt()),
     );
     getIt.registerSingleton<BuyerSearchCubit>(
-      BuyerSearchCubit(navigator: getIt(), categoryStore: getIt()),
+      BuyerSearchCubit(
+        navigator: getIt(),
+        categoryStore: getIt(),
+        getProductListingsUseCase: getIt(),
+        getOrganizationsUseCase: getIt(),
+        addToCartUseCase: getIt(),
+        snackBar: getIt(),
+      ),
+    );
+    getIt.registerSingleton<ProductDetailNavigator>(
+      ProductDetailNavigator(getIt()),
+    );
+    getIt.registerSingleton<ProductDetailCubit>(
+      ProductDetailCubit(
+        navigator: getIt(),
+        getProductByIdUseCase: getIt(),
+        addToCartUseCase: getIt(),
+        snackBar: getIt(),
+      ),
+    );
+    getIt.registerSingleton<SellerDetailNavigator>(
+      SellerDetailNavigator(getIt()),
+    );
+    getIt.registerSingleton<SellerDetailCubit>(
+      SellerDetailCubit(
+        navigator: getIt(),
+        getOrganizationByIdUseCase: getIt(),
+        getProductListingsUseCase: getIt(),
+        addToCartUseCase: getIt(),
+        snackBar: getIt(),
+      ),
     );
     getIt.registerSingleton<BuyerOrdersNavigator>(
       BuyerOrdersNavigator(getIt()),

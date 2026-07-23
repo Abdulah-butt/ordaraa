@@ -75,11 +75,13 @@ class CreateAccountCubit extends Cubit<CreateAccountState> {
 
       emit(state.copyWith(loading: true));
       await signupUseCase.execute(
-          request: CreateAccountRequest(
-        name: fullName,
-        email: email,
-        password: password,
-      ));
+        request: CreateAccountRequest(
+          name: fullName,
+          email: email,
+          password: password,
+        ),
+      );
+
       /// TODO: NAVIGATE TO HOME PAGE
       //navigator.openHome(HomeInitialParams());
     } catch (e) {

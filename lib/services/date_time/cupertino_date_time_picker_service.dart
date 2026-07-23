@@ -15,13 +15,12 @@ class CupertinoDateTimePickerService implements DateTimePickerService {
 
     final pickedDate = await showCupertinoModalPopup<DateTime>(
       context: context,
-      builder:
-          (context) => _buildDatePicker(
-            context,
-            selectedDate,
-            firstDate ?? DateTime(2000),
-            lastDate ?? DateTime(2100),
-          ),
+      builder: (context) => _buildDatePicker(
+        context,
+        selectedDate,
+        firstDate ?? DateTime(2000),
+        lastDate ?? DateTime(2100),
+      ),
     );
 
     return pickedDate ?? selectedDate;
@@ -80,9 +79,8 @@ class CupertinoDateTimePickerService implements DateTimePickerService {
 
     final pickedDateTime = await showCupertinoModalPopup<DateTime>(
       context: context,
-      builder:
-          (context) =>
-              _buildTimePicker(context, initialDateTime, is24HourFormat),
+      builder: (context) =>
+          _buildTimePicker(context, initialDateTime, is24HourFormat),
     );
 
     return pickedDateTime != null
@@ -140,14 +138,13 @@ class CupertinoDateTimePickerService implements DateTimePickerService {
 
     final pickedDate = await showCupertinoModalPopup<DateTime>(
       context: context,
-      builder:
-          (context) => _buildDatePicker(
-            context,
-            selectedDate,
-            firstDate ?? DateTime(2000),
-            lastDate ?? DateTime(2100),
-            mode: CupertinoDatePickerMode.dateAndTime,
-          ),
+      builder: (context) => _buildDatePicker(
+        context,
+        selectedDate,
+        firstDate ?? DateTime(2000),
+        lastDate ?? DateTime(2100),
+        mode: CupertinoDatePickerMode.dateAndTime,
+      ),
     );
 
     return pickedDate ?? selectedDate;

@@ -16,17 +16,13 @@ Future<T?> showAnchoredDropdown<T>(
   double maxHeight = 360,
   bool matchAnchorWidth = true,
 }) async {
-  final overlay =
-      Overlay.of(context).context.findRenderObject() as RenderBox?;
+  final overlay = Overlay.of(context).context.findRenderObject() as RenderBox?;
   final anchorBox = anchorContext.findRenderObject() as RenderBox?;
   if (overlay == null || anchorBox == null) {
     return null;
   }
 
-  final anchorTopLeft = anchorBox.localToGlobal(
-    Offset.zero,
-    ancestor: overlay,
-  );
+  final anchorTopLeft = anchorBox.localToGlobal(Offset.zero, ancestor: overlay);
   final anchorBottomLeft = anchorBox.localToGlobal(
     Offset(0, anchorBox.size.height),
     ancestor: overlay,
@@ -53,8 +49,9 @@ Future<T?> showAnchoredDropdown<T>(
     left = 16;
   }
 
-  final top =
-      showAbove ? (anchorTopLeft.dy - panelHeight - 8) : anchorBottomLeft.dy + 8;
+  final top = showAbove
+      ? (anchorTopLeft.dy - panelHeight - 8)
+      : anchorBottomLeft.dy + 8;
 
   final value = await showGeneralDialog<T>(
     context: context,
@@ -184,19 +181,15 @@ class _DropdownOptionTile extends StatelessWidget {
             SizedBox(
               width: 20,
               height: 20,
-              child:
-                  isSelected
-                      ? Icon(
-                          Icons.check_rounded,
-                          size: 18,
-                          color: colorScheme.onSecondaryContainer,
-                        )
-                      : const SizedBox.shrink(),
+              child: isSelected
+                  ? Icon(
+                      Icons.check_rounded,
+                      size: 18,
+                      color: colorScheme.onSecondaryContainer,
+                    )
+                  : const SizedBox.shrink(),
             ),
-            if (leading != null) ...[
-              const SizedBox(width: 8),
-              leading!,
-            ],
+            if (leading != null) ...[const SizedBox(width: 8), leading!],
             const SizedBox(width: 10),
             Expanded(
               child: Text(
@@ -205,10 +198,9 @@ class _DropdownOptionTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: textTheme.bodyMedium?.copyWith(
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                  color:
-                      isSelected
-                          ? colorScheme.onSecondaryContainer
-                          : colorScheme.onSurface,
+                  color: isSelected
+                      ? colorScheme.onSecondaryContainer
+                      : colorScheme.onSurface,
                 ),
               ),
             ),

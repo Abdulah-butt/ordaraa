@@ -9,5 +9,3 @@ extension IndianNumberFormat on num {
     return NumberFormat("#,##0.00", "en_IN").format(this);
   }
 }
-
-

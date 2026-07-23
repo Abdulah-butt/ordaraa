@@ -16,9 +16,9 @@ class AuthResult extends Equatable {
   final List<OrganizationMembership> memberships;
 
   const AuthResult.guest()
-      : session = null,
-        user = null,
-        memberships = const [];
+    : session = null,
+      user = null,
+      memberships = const [];
 
   AuthResult copyWith({
     AuthSession? session,

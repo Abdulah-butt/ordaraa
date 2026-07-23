@@ -1,5 +1,4 @@
 extension DateTimeStringExtension on String {
-
   DateTime toDateTime() {
     try {
       final parts = split('/');
@@ -15,4 +14,3 @@ extension DateTimeStringExtension on String {
     }
   }
 }
-

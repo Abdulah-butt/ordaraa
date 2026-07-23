@@ -1,7 +1,7 @@
 import '../../../../core/navigation/route_params.dart';
-class CreateAccountInitialParams extends RouteParams{
 
-const CreateAccountInitialParams();
+class CreateAccountInitialParams extends RouteParams {
+  const CreateAccountInitialParams();
 
   @override
   Map<String, dynamic> toMap() {
@@ -11,5 +11,4 @@ const CreateAccountInitialParams();
   static CreateAccountInitialParams fromMap(Map<String, dynamic> map) {
     return CreateAccountInitialParams();
   }
-
 }

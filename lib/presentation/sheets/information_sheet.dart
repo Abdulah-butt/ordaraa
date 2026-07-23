@@ -27,12 +27,10 @@ class InformationSheet extends StatelessWidget {
           style: context.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
-          textAlign: align??TextAlign.center,
+          textAlign: align ?? TextAlign.center,
         ),
-        Text(
-          description,
-        ),
-        const SizedBox(height: 54,),
+        Text(description),
+        const SizedBox(height: 54),
         CustomButton(
           text: "Okay",
           onTap: () {

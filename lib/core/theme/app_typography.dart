@@ -23,18 +23,18 @@ abstract final class AppTypography {
   static String get fontFamily => GoogleFonts.manrope().fontFamily!;
 
   static TextTheme lightTextTheme() => _build(
-        brightness: Brightness.light,
-        primary: AppColors.lightTextPrimary,
-        secondary: AppColors.lightTextSecondary,
-        tertiary: AppColors.lightTextTertiary,
-      );
+    brightness: Brightness.light,
+    primary: AppColors.lightTextPrimary,
+    secondary: AppColors.lightTextSecondary,
+    tertiary: AppColors.lightTextTertiary,
+  );
 
   static TextTheme darkTextTheme() => _build(
-        brightness: Brightness.dark,
-        primary: AppColors.darkTextPrimary,
-        secondary: AppColors.darkTextSecondary,
-        tertiary: AppColors.darkTextTertiary,
-      );
+    brightness: Brightness.dark,
+    primary: AppColors.darkTextPrimary,
+    secondary: AppColors.darkTextSecondary,
+    tertiary: AppColors.darkTextTertiary,
+  );
 
   static TextTheme _build({
     required Brightness brightness,
@@ -183,7 +183,6 @@ abstract final class AppTypography {
       );
 
   /// Apply tabular figures to any style (quantities, order counts, tables).
-  static TextStyle numeric(TextStyle base) => base.copyWith(
-        fontFeatures: const [FontFeature.tabularFigures()],
-      );
+  static TextStyle numeric(TextStyle base) =>
+      base.copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 }

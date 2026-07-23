@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/extensions/theme_extension.dart';
+import '../../core/enums/stock_status.dart';
 import '../../core/utils/assets.dart';
-import '../view_data/buyer_catalog_view_data.dart';
+import '../../domain/entities/product.dart';
+import 'custom_cache_image.dart';
 
 enum BuyerProductCardLayout { compact, detailed }
 
@@ -16,7 +18,7 @@ class BuyerProductCard extends StatelessWidget {
     this.onAdd,
   });
 
-  final BuyerProductViewData product;
+  final Product product;
   final BuyerProductCardLayout layout;
   final VoidCallback? onTap;
   final VoidCallback? onAdd;
@@ -30,26 +32,33 @@ class BuyerProductCard extends StatelessWidget {
 
   Widget _compact(BuildContext context) {
     return RepaintBoundary(
-      child: Container(
-        width: 171,
-        height: 252,
-        padding: const EdgeInsets.all(10),
-        decoration: _decoration(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _image(context, width: 151, height: 88),
-            const SizedBox(height: 7),
-            _AvailabilityBadge(availability: product.availability),
-            const SizedBox(height: 7),
-            _name(context, fontSize: 13),
-            const Spacer(),
-            _supplier(context, fontSize: 10),
-            const SizedBox(height: 4),
-            _packaging(context, fontSize: 10),
-            const SizedBox(height: 7),
-            _priceRow(context, fontSize: 11),
-          ],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Ink(
+            width: 171,
+            height: 252,
+            padding: const EdgeInsets.all(10),
+            decoration: _decoration(context),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _image(context, width: 151, height: 88),
+                const SizedBox(height: 7),
+                _AvailabilityBadge(availability: product.stockStatus),
+                const SizedBox(height: 7),
+                _name(context, fontSize: 13),
+                const Spacer(),
+                _supplier(context, fontSize: 10),
+                const SizedBox(height: 4),
+                _packaging(context, fontSize: 10),
+                const SizedBox(height: 7),
+                _priceRow(context, fontSize: 11),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -75,7 +84,7 @@ class BuyerProductCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _AvailabilityBadge(availability: product.availability),
+                      _AvailabilityBadge(availability: product.stockStatus),
                       const SizedBox(height: 5),
                       _name(context, fontSize: 15, maxLines: 1),
                       const SizedBox(height: 5),
@@ -113,16 +122,29 @@ class BuyerProductCard extends StatelessWidget {
     required double width,
     required double height,
   }) {
-    final ratio = MediaQuery.devicePixelRatioOf(context);
+    final imageUrl =
+        product.images.firstOrNull?.thumbnailUrl ??
+        product.images.firstOrNull?.url;
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image.asset(
-        product.imageAsset,
-        width: width,
-        height: height,
-        fit: BoxFit.cover,
-        cacheWidth: (width * ratio).round(),
-      ),
+      child: imageUrl == null
+          ? ColoredBox(
+              color: context.colorTheme.surfaceContainerLow,
+              child: SizedBox(
+                width: width,
+                height: height,
+                child: Icon(
+                  Icons.image_not_supported_outlined,
+                  color: context.colorTheme.onSurfaceVariant,
+                ),
+              ),
+            )
+          : CustomCacheImage(
+              imgUrl: imageUrl,
+              width: width,
+              height: height,
+              fit: BoxFit.cover,
+            ),
     );
   }
 
@@ -131,7 +153,7 @@ class BuyerProductCard extends StatelessWidget {
     required double fontSize,
     int maxLines = 2,
   }) => Text(
-    product.name,
+    product.titleOverride ?? product.variant.label,
     maxLines: maxLines,
     overflow: TextOverflow.ellipsis,
     style: context.textTheme.labelLarge?.copyWith(
@@ -147,7 +169,7 @@ class BuyerProductCard extends StatelessWidget {
       const SizedBox(width: 4),
       Expanded(
         child: Text(
-          product.supplier,
+          '${product.seller.name}${product.seller.verified ? ' · Verified' : ''}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: context.textTheme.labelSmall?.copyWith(
@@ -162,7 +184,7 @@ class BuyerProductCard extends StatelessWidget {
   );
 
   Widget _packaging(BuildContext context, {required double fontSize}) => Text(
-    product.packaging,
+    '${product.minimumOrderQuantity} ${product.priceUnit.code} minimum',
     maxLines: 1,
     overflow: TextOverflow.ellipsis,
     style: context.textTheme.labelSmall?.copyWith(
@@ -176,7 +198,7 @@ class BuyerProductCard extends StatelessWidget {
     children: [
       Expanded(
         child: Text(
-          product.price,
+          '${product.price.formatted} / ${product.priceUnit.code}',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: context.textTheme.labelMedium?.copyWith(
@@ -194,22 +216,22 @@ class BuyerProductCard extends StatelessWidget {
 
 class _AvailabilityBadge extends StatelessWidget {
   const _AvailabilityBadge({required this.availability});
-  final BuyerProductAvailability availability;
+  final StockStatus availability;
 
   @override
   Widget build(BuildContext context) {
     final (label, color, background) = switch (availability) {
-      BuyerProductAvailability.available => (
+      StockStatus.inStock => (
         'Available',
         context.ordaraColors.success,
         context.ordaraColors.successContainer,
       ),
-      BuyerProductAvailability.lowStock => (
+      StockStatus.lowStock => (
         'Low Stock',
         context.ordaraColors.warning,
         context.ordaraColors.warningContainer,
       ),
-      BuyerProductAvailability.outOfStock => (
+      StockStatus.outOfStock || StockStatus.unavailable => (
         'Out of Stock',
         context.colorTheme.error,
         context.colorTheme.errorContainer,
@@ -235,12 +257,13 @@ class _AvailabilityBadge extends StatelessWidget {
 
 class _ProductActionButton extends StatelessWidget {
   const _ProductActionButton({required this.product, this.onTap});
-  final BuyerProductViewData product;
+  final Product product;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    if (!product.isAvailable) {
+    if (product.stockStatus == StockStatus.outOfStock ||
+        product.stockStatus == StockStatus.unavailable) {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
         decoration: BoxDecoration(

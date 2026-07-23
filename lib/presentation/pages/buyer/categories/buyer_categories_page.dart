@@ -73,8 +73,9 @@ class _BuyerCategoriesPageState extends State<BuyerCategoriesPage> {
                   ),
                 ),
                 if (categoryState.loading && categories.isEmpty)
-                  const SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator()),
+                  const SliverPadding(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 24),
+                    sliver: BuyerCategoryGridSkeletonSliver(),
                   )
                 else if (categoryState.errorMessage != null &&
                     categories.isEmpty)

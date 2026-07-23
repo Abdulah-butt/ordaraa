@@ -46,9 +46,9 @@ class MaterialDateTimePickerService implements DateTimePickerService {
             ),
           ),
           child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              alwaysUse24HourFormat: is24HourFormat,
-            ),
+            data: MediaQuery.of(
+              context,
+            ).copyWith(alwaysUse24HourFormat: is24HourFormat),
             child: child!,
           ),
         );
@@ -79,12 +79,6 @@ class MaterialDateTimePickerService implements DateTimePickerService {
     );
     if (time == null) return null;
 
-    return DateTime(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.minute,
-    );
+    return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 }

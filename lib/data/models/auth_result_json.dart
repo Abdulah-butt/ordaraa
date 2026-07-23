@@ -19,9 +19,7 @@ class AuthResultJson {
     final membershipsJson = json['memberships'] as List<dynamic>;
     return AuthResultJson(
       session: json['session'] != null
-          ? AuthSessionJson.fromJson(
-              json['session'] as Map<String, dynamic>,
-            )
+          ? AuthSessionJson.fromJson(json['session'] as Map<String, dynamic>)
           : null,
       user: UserJson.fromJson(json['user'] as Map<String, dynamic>),
       memberships: membershipsJson

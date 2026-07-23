@@ -5,9 +5,10 @@ import '../../core/enums/organization_type.dart';
 import '../../core/enums/payment_terms.dart';
 import 'image_resource.dart';
 import 'market.dart';
+import 'address.dart';
 
 class Organization extends Equatable {
-  const Organization({
+  Organization({
     required this.id,
     required this.publicCode,
     required this.name,
@@ -24,7 +25,8 @@ class Organization extends Equatable {
     required this.contactPhone,
     required this.defaultPaymentTerms,
     required this.createdAt,
-  });
+    List<Address> addresses = const [],
+  }) : addresses = List.unmodifiable(addresses);
 
   final String id;
   final String publicCode;
@@ -42,6 +44,7 @@ class Organization extends Equatable {
   final String? contactPhone;
   final PaymentTerms? defaultPaymentTerms;
   final DateTime createdAt;
+  final List<Address> addresses;
 
   Organization copyWith({
     String? id,
@@ -60,6 +63,7 @@ class Organization extends Equatable {
     String? Function()? contactPhone,
     PaymentTerms? Function()? defaultPaymentTerms,
     DateTime? createdAt,
+    List<Address>? addresses,
   }) {
     return Organization(
       id: id ?? this.id,
@@ -82,6 +86,7 @@ class Organization extends Equatable {
           ? this.defaultPaymentTerms
           : defaultPaymentTerms(),
       createdAt: createdAt ?? this.createdAt,
+      addresses: addresses ?? this.addresses,
     );
   }
 
@@ -103,5 +108,6 @@ class Organization extends Equatable {
     contactPhone,
     defaultPaymentTerms,
     createdAt,
+    addresses,
   ];
 }

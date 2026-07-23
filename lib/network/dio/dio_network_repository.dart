@@ -165,10 +165,18 @@ class DioNetworkRepository implements NetworkRepository {
 
   Never _handleException(DioException exception) {
     debugPrint("status code : ${exception.response?.statusCode}");
+    final error = exception.error;
+    if (error is AuthSessionExpiredException) {
+      throw error;
+    }
     if (exception.type == DioExceptionType.connectionError) {
       throw ApiStatuses.INTERNET_CONNECTION_PROBLEM;
     }
-    throw exception.response?.data['message'];
+    final responseData = exception.response?.data;
+    if (responseData is Map<String, dynamic>) {
+      throw responseData['message'] ?? exception.message;
+    }
+    throw exception.message ?? 'The request could not be completed.';
   }
 
   Map<String, dynamic> _removeNullAndEmptyValues(

@@ -172,9 +172,12 @@ class BuyerSearchFilterSheet extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: CustomButton(
-                    text: 'Show ${state.resultCount} products',
+                    text: 'Show products',
                     height: 52,
-                    onTap: context.pop,
+                    onTap: () {
+                      context.pop();
+                      cubit.applyFilters();
+                    },
                   ),
                 ),
               ],

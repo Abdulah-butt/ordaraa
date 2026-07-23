@@ -7,18 +7,11 @@ class OneSignalNotificationService implements RemoteNotificationService {
   OneSignalNotificationService({required this.permissionService});
 
   @override
-  Future<void> initialize() async {
-
-
-  }
+  Future<void> initialize() async {}
 
   @override
-  Future<void> login({required String id}) async{
-
-  }
+  Future<void> login({required String id}) async {}
 
   @override
-  Future<void> clearAllNotifications() async {
-
-  }
+  Future<void> clearAllNotifications() async {}
 }

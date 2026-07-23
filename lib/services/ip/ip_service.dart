@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
- String kDefaultCountryCode="";
+String kDefaultCountryCode = "";
+
 class IpService {
   final Dio _dio = Dio();
   Future<void> initialize() async {

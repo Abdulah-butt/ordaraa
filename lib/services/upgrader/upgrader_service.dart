@@ -51,16 +51,15 @@ class AppUpgraderService implements UpgraderService {
     final context = _navigatorKey?.currentContext;
     if (context != null || _navigatorProbeTimer != null) return;
 
-    _navigatorProbeTimer = Timer.periodic(
-      const Duration(milliseconds: 150),
-      (timer) {
-        if (_navigatorKey?.currentContext != null) {
-          timer.cancel();
-          _navigatorProbeTimer = null;
-          _tryShowForcedUpgradeDialog();
-        }
-      },
-    );
+    _navigatorProbeTimer = Timer.periodic(const Duration(milliseconds: 150), (
+      timer,
+    ) {
+      if (_navigatorKey?.currentContext != null) {
+        timer.cancel();
+        _navigatorProbeTimer = null;
+        _tryShowForcedUpgradeDialog();
+      }
+    });
   }
 
   Future<void> _tryShowForcedUpgradeDialog() async {
@@ -104,8 +103,9 @@ class AppUpgraderService implements UpgraderService {
             actions: [
               FilledButton(
                 onPressed: _upgrader.sendUserToAppStore,
-                child:
-                    Text(messages.message(UpgraderMessage.buttonTitleUpdate)!),
+                child: Text(
+                  messages.message(UpgraderMessage.buttonTitleUpdate)!,
+                ),
               ),
             ],
           ),

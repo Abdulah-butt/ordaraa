@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/extensions/theme_extension.dart';
 import '../../core/utils/assets.dart';
-import '../view_data/buyer_catalog_view_data.dart';
+import '../../domain/entities/organization.dart';
+import 'custom_cache_image.dart';
 
 enum BuyerSupplierCardLayout { compact, detailed }
 
@@ -15,7 +16,7 @@ class BuyerSupplierCard extends StatelessWidget {
     this.onTap,
   });
 
-  final BuyerSupplierViewData supplier;
+  final Organization supplier;
   final BuyerSupplierCardLayout layout;
   final VoidCallback? onTap;
 
@@ -42,18 +43,29 @@ class BuyerSupplierCard extends StatelessWidget {
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: detailed ? 58 : 52,
-                  height: detailed ? 58 : 52,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: context.colorTheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(detailed ? 16 : 14),
-                  ),
-                  child: SvgPicture.asset(
-                    Assets.buyerHomeSupplierStore,
-                    width: 22,
-                    height: 22,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(detailed ? 16 : 14),
+                  child: Container(
+                    width: detailed ? 58 : 52,
+                    height: detailed ? 58 : 52,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: context.colorTheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(detailed ? 16 : 14),
+                    ),
+                    child: supplier.logo == null
+                        ? SvgPicture.asset(
+                            Assets.buyerHomeSupplierStore,
+                            width: 22,
+                            height: 22,
+                          )
+                        : CustomCacheImage(
+                            imgUrl:
+                                supplier.logo!.thumbnailUrl ??
+                                supplier.logo!.url,
+                            width: detailed ? 58 : 52,
+                            height: detailed ? 58 : 52,
+                          ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -79,7 +91,7 @@ class BuyerSupplierCard extends StatelessWidget {
 
 class _CompactSupplierCopy extends StatelessWidget {
   const _CompactSupplierCopy({required this.supplier});
-  final BuyerSupplierViewData supplier;
+  final Organization supplier;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -96,14 +108,16 @@ class _CompactSupplierCopy extends StatelessWidget {
       ),
       const SizedBox(height: 2),
       Text(
-        'Verified supplier',
+        supplier.verified ? 'Verified supplier' : 'Supplier',
         style: context.textTheme.labelSmall?.copyWith(
-          color: context.ordaraColors.success,
+          color: supplier.verified
+              ? context.ordaraColors.success
+              : context.colorTheme.onSurfaceVariant,
         ),
       ),
       const SizedBox(height: 2),
       Text(
-        supplier.serviceArea,
+        '${supplier.market.name} · ${supplier.market.countryCode}',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: context.textTheme.labelSmall?.copyWith(
@@ -116,7 +130,7 @@ class _CompactSupplierCopy extends StatelessWidget {
 
 class _DetailedSupplierCopy extends StatelessWidget {
   const _DetailedSupplierCopy({required this.supplier});
-  final BuyerSupplierViewData supplier;
+  final Organization supplier;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -135,41 +149,49 @@ class _DetailedSupplierCopy extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-            decoration: BoxDecoration(
-              color: context.ordaraColors.successContainer,
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SvgPicture.asset(
-                  Assets.buyerSearchCheck,
-                  width: 10,
-                  height: 10,
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  'Verified',
-                  style: context.textTheme.labelSmall?.copyWith(
-                    color: context.ordaraColors.success,
-                    fontSize: 9,
+          if (supplier.verified) ...[
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+              decoration: BoxDecoration(
+                color: context.ordaraColors.successContainer,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(
+                    Assets.buyerSearchCheck,
+                    width: 10,
+                    height: 10,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 3),
+                  Text(
+                    'Verified',
+                    style: context.textTheme.labelSmall?.copyWith(
+                      color: context.ordaraColors.success,
+                      fontSize: 9,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
       const SizedBox(height: 4),
-      _Metadata(asset: Assets.buyerHomeLocation, text: supplier.serviceArea),
+      _Metadata(
+        asset: Assets.buyerHomeLocation,
+        text: '${supplier.market.name} · ${supplier.market.countryCode}',
+      ),
       const SizedBox(height: 4),
-      _Metadata(asset: Assets.buyerSearchTruck, text: supplier.deliveryDetails),
+      _Metadata(
+        asset: Assets.buyerSearchTruck,
+        text: supplier.contactEmail ?? supplier.publicCode,
+      ),
       const SizedBox(height: 4),
       Text(
-        supplier.catalogSummary,
+        supplier.publicCode,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: context.textTheme.labelSmall?.copyWith(

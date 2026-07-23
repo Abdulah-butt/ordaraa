@@ -10,11 +10,11 @@ class AppSnackBar {
 
   /// Shows a Swift-style toast notification
   void show(
-      String message, {
-        SnackBarType snackBarType = SnackBarType.INFO,
-        Duration duration = const Duration(seconds: 3),
-        bool autoDismiss = true,
-      }) {
+    String message, {
+    SnackBarType snackBarType = SnackBarType.INFO,
+    Duration duration = const Duration(seconds: 3),
+    bool autoDismiss = true,
+  }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -46,7 +46,7 @@ class AppSnackBar {
       height: 60,
       animation: AnimationType.fromTop,
       autoDismiss: autoDismiss,
-      icon:Icon(icon,color: foregroundColor,),
+      icon: Icon(icon, color: foregroundColor),
       background: backgroundColor,
       showProgressIndicator: false,
       displayCloseButton: false,
@@ -70,16 +70,28 @@ class AppSnackBar {
 
   /// Quick success toast
   void success(String message, {Duration? duration}) {
-    show(message, snackBarType: SnackBarType.SUCCESS, duration: duration ?? const Duration(seconds: 2));
+    show(
+      message,
+      snackBarType: SnackBarType.SUCCESS,
+      duration: duration ?? const Duration(seconds: 2),
+    );
   }
 
   /// Quick error toast
   void error(String message, {Duration? duration}) {
-    show(message, snackBarType: SnackBarType.ERROR, duration: duration ?? const Duration(seconds: 4));
+    show(
+      message,
+      snackBarType: SnackBarType.ERROR,
+      duration: duration ?? const Duration(seconds: 4),
+    );
   }
 
   /// Quick info toast
   void info(String message, {Duration? duration}) {
-    show(message, snackBarType: SnackBarType.INFO, duration: duration ?? const Duration(seconds: 3));
+    show(
+      message,
+      snackBarType: SnackBarType.INFO,
+      duration: duration ?? const Duration(seconds: 3),
+    );
   }
 }

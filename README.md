@@ -143,6 +143,11 @@ Startup chain:
 - Every page should expose a static route path
 - Route params should flow through `RouteParams`
 - Use router-based navigation, not ad hoc route strings
+- Build route pages through the shared transition in
+  `lib/core/routes/app_route_transition.dart`
+- Do not add one-off page animations inside individual routes
+- Route motion must remain short, subtle, and respect the device's reduced
+  animation preference
 
 ### 4.2 AppNavigator Wrapper
 
@@ -331,6 +336,43 @@ Rules:
 All asset paths must be centralized in `lib/core/utils/assets.dart`.
 
 Do not scatter raw asset strings across widgets.
+
+### 9.7 Loading Placeholders
+
+Never show a plain circular loader in place of a list, card, image, or content
+widget whose final layout is known.
+
+Mandatory rules:
+
+- use a skeleton placeholder that closely matches the final widget dimensions
+- use the shared skeleton widgets from `lib/presentation/widgets/`
+- prefer a non-animated skeleton effect for routine list loading to minimize
+  repainting, GPU work, and battery usage
+- wrap reusable skeleton regions in a `RepaintBoundary`
+- keep placeholder counts small and representative of the visible viewport
+- reserve circular loaders for indeterminate actions where no content layout
+  can be represented, such as a button submission
+- use the same skeleton pattern for initial loading and paginated load-more
+  states
+
+### 9.8 Cached Page Data and Pull to Refresh
+
+Bottom-navigation pages and tabbed result screens must preserve successfully
+loaded data while the app session is active.
+
+Mandatory rules:
+
+- do not repeat an API request on page re-entry when the required state already
+  contains valid data
+- keep independent cached result and pagination state for each tab
+- switching tabs must reuse its cached results when the active query and
+  filters have not changed
+- changed search criteria or filters invalidate only the affected result cache
+- use the shared pull-to-refresh widget for an explicit user-requested reload
+- pull-to-refresh must fetch the first page again and replace that result set
+  without discarding visible content before the response arrives
+- background re-entry must remain silent; only explicit refresh should bypass
+  a populated cache
 
 ## 10. Enum and Extension Standards
 

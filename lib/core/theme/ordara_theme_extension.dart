@@ -168,20 +168,29 @@ class OrdaraThemeColors extends ThemeExtension<OrdaraThemeColors> {
     return OrdaraThemeColors(
       success: Color.lerp(success, other.success, t)!,
       onSuccess: Color.lerp(onSuccess, other.onSuccess, t)!,
-      successContainer:
-          Color.lerp(successContainer, other.successContainer, t)!,
+      successContainer: Color.lerp(
+        successContainer,
+        other.successContainer,
+        t,
+      )!,
       warning: Color.lerp(warning, other.warning, t)!,
       onWarning: Color.lerp(onWarning, other.onWarning, t)!,
-      warningContainer:
-          Color.lerp(warningContainer, other.warningContainer, t)!,
+      warningContainer: Color.lerp(
+        warningContainer,
+        other.warningContainer,
+        t,
+      )!,
       info: Color.lerp(info, other.info, t)!,
       onInfo: Color.lerp(onInfo, other.onInfo, t)!,
       infoContainer: Color.lerp(infoContainer, other.infoContainer, t)!,
       buyer: Color.lerp(buyer, other.buyer, t)!,
       buyerContainer: Color.lerp(buyerContainer, other.buyerContainer, t)!,
       supplier: Color.lerp(supplier, other.supplier, t)!,
-      supplierContainer:
-          Color.lerp(supplierContainer, other.supplierContainer, t)!,
+      supplierContainer: Color.lerp(
+        supplierContainer,
+        other.supplierContainer,
+        t,
+      )!,
       market: Color.lerp(market, other.market, t)!,
       marketContainer: Color.lerp(marketContainer, other.marketContainer, t)!,
       borderSubtle: Color.lerp(borderSubtle, other.borderSubtle, t)!,
@@ -190,8 +199,11 @@ class OrdaraThemeColors extends ThemeExtension<OrdaraThemeColors> {
       textTertiary: Color.lerp(textTertiary, other.textTertiary, t)!,
       textDisabled: Color.lerp(textDisabled, other.textDisabled, t)!,
       shimmerBase: Color.lerp(shimmerBase, other.shimmerBase, t)!,
-      shimmerHighlight:
-          Color.lerp(shimmerHighlight, other.shimmerHighlight, t)!,
+      shimmerHighlight: Color.lerp(
+        shimmerHighlight,
+        other.shimmerHighlight,
+        t,
+      )!,
     );
   }
 }

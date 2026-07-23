@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'number_extension.dart';
 
 extension StringExtension on String {
-
-
   bool isValidEmail() {
     // Regular expression for validating email addresses
     final emailRegExp = RegExp(
@@ -37,14 +35,13 @@ extension StringExtension on String {
       return this;
     }
     final words = split(' ');
-    final capitalizedWords =
-        words.map((word) {
-          if (word.isNotEmpty) {
-            return '${word[0].toUpperCase()}${word.substring(1)}';
-          } else {
-            return word;
-          }
-        }).toList();
+    final capitalizedWords = words.map((word) {
+      if (word.isNotEmpty) {
+        return '${word[0].toUpperCase()}${word.substring(1)}';
+      } else {
+        return word;
+      }
+    }).toList();
     return capitalizedWords.join(' ');
   }
 
@@ -107,8 +104,11 @@ extension StringExtension on String {
 
     // Validate specific month-day combinations (e.g., February 30)
     final int year = date.year;
-    final int daysInMonth =
-        DateTime(year, month + 1, 0).day; // Get the last day of the month
+    final int daysInMonth = DateTime(
+      year,
+      month + 1,
+      0,
+    ).day; // Get the last day of the month
     if (day > daysInMonth) {
       throw "Invalid day. Month $month only has $daysInMonth days.";
     }
@@ -121,10 +121,8 @@ extension StringExtension on String {
     }
   }
 
-
   String get maskPhoneNumber {
     final last4 = substring(length - 4);
     return '****$last4';
   }
 }
-

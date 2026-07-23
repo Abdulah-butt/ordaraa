@@ -22,16 +22,23 @@ import '../../presentation/pages/buyer/account/buyer_account_page.dart';
 import '../../presentation/pages/buyer/bottom_navigation/buyer_bottom_navigation.dart';
 import '../../presentation/pages/buyer/categories/buyer_categories_initial_params.dart';
 import '../../presentation/pages/buyer/categories/buyer_categories_page.dart';
+import '../../presentation/pages/buyer/cart/cart_initial_params.dart';
+import '../../presentation/pages/buyer/cart/cart_page.dart';
 import '../../presentation/pages/buyer/home/buyer_home_initial_params.dart';
 import '../../presentation/pages/buyer/home/buyer_home_page.dart';
 import '../../presentation/pages/buyer/orders/buyer_orders_initial_params.dart';
 import '../../presentation/pages/buyer/orders/buyer_orders_page.dart';
+import '../../presentation/pages/buyer/product_detail/product_detail_initial_params.dart';
+import '../../presentation/pages/buyer/product_detail/product_detail_page.dart';
 import '../../presentation/pages/buyer/search/buyer_search_initial_params.dart';
 import '../../presentation/pages/buyer/search/buyer_search_page.dart';
+import '../../presentation/pages/buyer/seller_detail/seller_detail_initial_params.dart';
+import '../../presentation/pages/buyer/seller_detail/seller_detail_page.dart';
 import '../../presentation/pages/splash/splash_initial_params.dart';
 import '../../presentation/pages/splash/splash_page.dart';
 import '../../service_locator/service_locator.dart';
 import '../navigation/app_navigator.dart';
+import 'app_route_transition.dart';
 
 final GlobalKey<NavigatorState> _buyerShellNavigator =
     GlobalKey<NavigatorState>(debugLabel: 'buyer_shell');
@@ -48,99 +55,168 @@ class AppRouter {
     routes: [
       GoRoute(
         path: SplashPage.path,
-        builder: (context, state) {
-          return SplashPage(
-            cubit: getIt(),
-            initialParams: SplashInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: SplashPage(
+              cubit: getIt(),
+              initialParams: SplashInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: LoginPage.path,
-        builder: (context, state) {
-          return LoginPage(
-            cubit: getIt(),
-            initialParams: LoginInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: LoginPage(
+              cubit: getIt(),
+              initialParams: LoginInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: ChooseRolePage.path,
-        builder: (context, state) {
-          return ChooseRolePage(
-            cubit: getIt(),
-            initialParams: ChooseRoleInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: ChooseRolePage(
+              cubit: getIt(),
+              initialParams: ChooseRoleInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: PhoneLoginPage.path,
-        builder: (context, state) {
-          return PhoneLoginPage(
-            cubit: getIt(),
-            initialParams: PhoneLoginInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: PhoneLoginPage(
+              cubit: getIt(),
+              initialParams: PhoneLoginInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: OtpVerificationPage.path,
-        builder: (context, state) {
-          return OtpVerificationPage(
-            cubit: getIt(),
-            initialParams: OtpVerificationInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: OtpVerificationPage(
+              cubit: getIt(),
+              initialParams: OtpVerificationInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: BuyerRegistrationPage.path,
-        builder: (context, state) {
-          return BuyerRegistrationPage(
-            cubit: getIt(),
-            initialParams: BuyerRegistrationInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: BuyerRegistrationPage(
+              cubit: getIt(),
+              initialParams: BuyerRegistrationInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: SellerRegistrationPage.path,
-        builder: (context, state) {
-          return SellerRegistrationPage(
-            cubit: getIt(),
-            initialParams: SellerRegistrationInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: SellerRegistrationPage(
+              cubit: getIt(),
+              initialParams: SellerRegistrationInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: ApplicationReceivedPage.path,
-        builder: (context, state) {
-          return ApplicationReceivedPage(
-            cubit: getIt(),
-            initialParams: ApplicationReceivedInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: ApplicationReceivedPage(
+              cubit: getIt(),
+              initialParams: ApplicationReceivedInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
       ),
       GoRoute(
         path: CreateAccountPage.path,
-        builder: (context, state) {
-          return CreateAccountPage(
-            cubit: getIt(),
-            initialParams: CreateAccountInitialParams.fromMap(
-              state.uri.queryParameters,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: CreateAccountPage(
+              cubit: getIt(),
+              initialParams: CreateAccountInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: ProductDetailPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: ProductDetailPage(
+              cubit: getIt(),
+              initialParams: ProductDetailInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: CartPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: CartPage(
+              cubit: getIt(),
+              initialParams: CartInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: SellerDetailPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: SellerDetailPage(
+              cubit: getIt(),
+              initialParams: SellerDetailInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
             ),
           );
         },
@@ -153,55 +229,70 @@ class AppRouter {
         routes: [
           GoRoute(
             path: BuyerHomePage.path,
-            builder: (context, state) {
-              return BuyerHomePage(
-                cubit: getIt(),
-                initialParams: BuyerHomeInitialParams.fromMap(
-                  state.uri.queryParameters,
+            pageBuilder: (context, state) {
+              return AppRouteTransition.build(
+                state: state,
+                child: BuyerHomePage(
+                  cubit: getIt(),
+                  initialParams: BuyerHomeInitialParams.fromMap(
+                    state.uri.queryParameters,
+                  ),
                 ),
               );
             },
           ),
           GoRoute(
             path: BuyerCategoriesPage.path,
-            builder: (context, state) {
-              return BuyerCategoriesPage(
-                cubit: getIt(),
-                initialParams: BuyerCategoriesInitialParams.fromMap(
-                  state.uri.queryParameters,
+            pageBuilder: (context, state) {
+              return AppRouteTransition.build(
+                state: state,
+                child: BuyerCategoriesPage(
+                  cubit: getIt(),
+                  initialParams: BuyerCategoriesInitialParams.fromMap(
+                    state.uri.queryParameters,
+                  ),
                 ),
               );
             },
           ),
           GoRoute(
             path: BuyerSearchPage.path,
-            builder: (context, state) {
-              return BuyerSearchPage(
-                cubit: getIt(),
-                initialParams: BuyerSearchInitialParams.fromMap(
-                  state.uri.queryParameters,
+            pageBuilder: (context, state) {
+              return AppRouteTransition.build(
+                state: state,
+                child: BuyerSearchPage(
+                  cubit: getIt(),
+                  initialParams: BuyerSearchInitialParams.fromMap(
+                    state.uri.queryParameters,
+                  ),
                 ),
               );
             },
           ),
           GoRoute(
             path: BuyerOrdersPage.path,
-            builder: (context, state) {
-              return BuyerOrdersPage(
-                cubit: getIt(),
-                initialParams: BuyerOrdersInitialParams.fromMap(
-                  state.uri.queryParameters,
+            pageBuilder: (context, state) {
+              return AppRouteTransition.build(
+                state: state,
+                child: BuyerOrdersPage(
+                  cubit: getIt(),
+                  initialParams: BuyerOrdersInitialParams.fromMap(
+                    state.uri.queryParameters,
+                  ),
                 ),
               );
             },
           ),
           GoRoute(
             path: BuyerAccountPage.path,
-            builder: (context, state) {
-              return BuyerAccountPage(
-                cubit: getIt(),
-                initialParams: BuyerAccountInitialParams.fromMap(
-                  state.uri.queryParameters,
+            pageBuilder: (context, state) {
+              return AppRouteTransition.build(
+                state: state,
+                child: BuyerAccountPage(
+                  cubit: getIt(),
+                  initialParams: BuyerAccountInitialParams.fromMap(
+                    state.uri.queryParameters,
+                  ),
                 ),
               );
             },

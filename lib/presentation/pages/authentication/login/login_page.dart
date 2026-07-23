@@ -17,8 +17,11 @@ class LoginPage extends StatefulWidget {
 
   static const path = '/login';
 
-  const LoginPage(
-      {super.key, required this.cubit, required this.initialParams});
+  const LoginPage({
+    super.key,
+    required this.cubit,
+    required this.initialParams,
+  });
 
   @override
   State<LoginPage> createState() => _LoginState();
@@ -56,10 +59,7 @@ class _LoginState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: kScreenPadding),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.login,
-                    size: 50,
-                  ),
+                  Icon(Icons.login, size: 50),
                   Text("Login", style: AppStyle.authHeading(context)),
                   SizedBox(height: 30),
                   CustomPhoneNumberField(

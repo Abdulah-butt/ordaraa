@@ -51,10 +51,11 @@ class LoginCubit extends Cubit<LoginState> {
       }
       emit(state.copyWith(loading: true));
       await loginUseCase.execute(
-          request: LoginRequest(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      ));
+        request: LoginRequest(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        ),
+      );
 
       /// TODO: NAVIGATE TO HOME LIKE BELOW
       // navigator.openHome(HomeInitialParams());

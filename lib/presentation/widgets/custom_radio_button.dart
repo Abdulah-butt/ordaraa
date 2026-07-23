@@ -44,10 +44,9 @@ class CustomRadioButton<T> extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color:
-                      isSelected
-                          ? (activeColor ?? theme.primaryColor)
-                          : (inactiveColor ?? theme.dividerColor),
+                  color: isSelected
+                      ? (activeColor ?? theme.primaryColor)
+                      : (inactiveColor ?? theme.dividerColor),
                   width: 2,
                 ),
               ),
@@ -56,10 +55,9 @@ class CustomRadioButton<T> extends StatelessWidget {
                 height: 12,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color:
-                      isSelected
-                          ? (activeColor ?? theme.primaryColor)
-                          : Colors.transparent,
+                  color: isSelected
+                      ? (activeColor ?? theme.primaryColor)
+                      : Colors.transparent,
                 ),
               ),
             ),
@@ -73,9 +71,9 @@ class CustomRadioButton<T> extends StatelessWidget {
                   subTitle == null
                       ? SizedBox.shrink()
                       : Text(
-                        subTitle!,
-                        style: context.textTheme.bodySmall?.copyWith(),
-                      ),
+                          subTitle!,
+                          style: context.textTheme.bodySmall?.copyWith(),
+                        ),
                 ],
               ),
             ),

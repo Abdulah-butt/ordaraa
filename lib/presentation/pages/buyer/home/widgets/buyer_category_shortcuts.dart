@@ -4,6 +4,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../../core/extensions/theme_extension.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../domain/entities/category.dart';
+import '../../../../widgets/app_skeleton.dart';
 import '../../../../widgets/custom_cache_image.dart';
 
 class BuyerCategoryShortcuts extends StatelessWidget {
@@ -23,17 +24,27 @@ class BuyerCategoryShortcuts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (loading && categories.isEmpty) {
-      return Skeletonizer(
-        enabled: true,
+      return const AppSkeleton(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(
-            4,
-            (_) => const Bone.square(
+          children: [
+            Bone.square(
               size: 72,
               borderRadius: BorderRadius.all(Radius.circular(14)),
             ),
-          ),
+            Bone.square(
+              size: 72,
+              borderRadius: BorderRadius.all(Radius.circular(14)),
+            ),
+            Bone.square(
+              size: 72,
+              borderRadius: BorderRadius.all(Radius.circular(14)),
+            ),
+            Bone.square(
+              size: 72,
+              borderRadius: BorderRadius.all(Radius.circular(14)),
+            ),
+          ],
         ),
       );
     }
@@ -91,10 +102,11 @@ class _CategoryShortcut extends StatelessWidget {
           height: 72,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 4,
             children: [
               Container(
                 width: 34,
-                height: 34,
+                height: 40,
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: selected
@@ -104,14 +116,16 @@ class _CategoryShortcut extends StatelessWidget {
                 ),
                 child: _CategoryImage(category: category),
               ),
-              const SizedBox(height: 6),
-              Text(
-                selected ? 'All' : category.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: context.textTheme.labelSmall?.copyWith(
-                  color: context.colorTheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  selected ? 'All' : category.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.labelSmall?.copyWith(
+                    color: context.colorTheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
