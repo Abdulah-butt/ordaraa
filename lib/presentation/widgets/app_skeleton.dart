@@ -37,7 +37,11 @@ class AppSkeletonBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppSkeleton(
-      child: Bone(width: width, height: height, borderRadius: borderRadius),
+      child: Bone(
+        width: width ?? double.infinity,
+        height: height,
+        borderRadius: borderRadius,
+      ),
     );
   }
 }
