@@ -5,6 +5,7 @@ import '../../../../core/alert/app_snack_bar.dart';
 import '../../../../core/enums/address_type.dart';
 import '../../../../domain/entities/market.dart';
 import '../../../../domain/stores/market_store.dart';
+import '../../../../domain/stores/user_store.dart';
 import '../../../../domain/usecases/register_buyer_organization_use_case.dart';
 import '../../../../network/request_model/organization_registration_request.dart';
 import '../../../../network/request_model/registration_address_request.dart';
@@ -18,24 +19,24 @@ class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
     required this.navigator,
     required this.snackBar,
     required this.marketStore,
+    required this.userStore,
     required this.registerBuyerOrganizationUseCase,
   }) : super(BuyerRegistrationState.initial());
 
   final BuyerRegistrationNavigator navigator;
   final AppSnackBar snackBar;
   final MarketStore marketStore;
+  final UserStore userStore;
   final RegisterBuyerOrganizationUseCase registerBuyerOrganizationUseCase;
   final businessNameController = TextEditingController();
   final addressLine1Controller = TextEditingController();
   final cityController = TextEditingController();
   final stateController = TextEditingController();
   final postalCodeController = TextEditingController();
-  String phoneNumber = '';
-
   List<Market> get markets => marketStore.state;
+  String get phoneNumber => userStore.state.user?.phone.trim() ?? '';
 
   Future<void> onInit(BuyerRegistrationInitialParams initialParams) async {
-    phoneNumber = initialParams.phoneNumber;
     emit(BuyerRegistrationState.initial().copyWith(loadingMarkets: true));
     try {
       final availableMarkets = await marketStore.loadMarkets();
@@ -107,6 +108,5 @@ class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
     cityController.clear();
     stateController.clear();
     postalCodeController.clear();
-    phoneNumber = '';
   }
 }

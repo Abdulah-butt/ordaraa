@@ -72,9 +72,7 @@ class OtpVerificationCubit extends Cubit<OtpVerificationState> {
       case AuthFlowDestination.buyerHome:
         navigator.openBuyerHomeAndClearStack(const BuyerHomeInitialParams());
       case AuthFlowDestination.buyerRegistration:
-        navigator.openBuyerRegistration(
-          BuyerRegistrationInitialParams(phoneNumber: phoneNumber),
-        );
+        navigator.openBuyerRegistration(const BuyerRegistrationInitialParams());
       case AuthFlowDestination.sellerRegistration:
         navigator.openSellerRegistration(
           SellerRegistrationInitialParams(phoneNumber: phoneNumber),

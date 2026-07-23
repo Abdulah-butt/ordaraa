@@ -1,16 +1,12 @@
 import '../../../../core/navigation/route_params.dart';
 
 class BuyerRegistrationInitialParams extends RouteParams {
-  const BuyerRegistrationInitialParams({required this.phoneNumber});
-
-  final String phoneNumber;
+  const BuyerRegistrationInitialParams();
 
   @override
-  Map<String, dynamic> toMap() => {'phoneNumber': phoneNumber};
+  Map<String, dynamic> toMap() => const {};
 
   static BuyerRegistrationInitialParams fromMap(Map<String, dynamic> map) {
-    return BuyerRegistrationInitialParams(
-      phoneNumber: map['phoneNumber'] ?? '',
-    );
+    return const BuyerRegistrationInitialParams();
   }
 }

@@ -107,6 +107,7 @@ class AppCubits {
         navigator: getIt(),
         snackBar: getIt(),
         marketStore: getIt(),
+        userStore: getIt(),
         registerBuyerOrganizationUseCase: getIt(),
       ),
     );

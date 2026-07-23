@@ -5,22 +5,16 @@ import 'package:ordaraa/network/file_field.dart';
 import 'package:ordaraa/network/network_repository.dart';
 
 void main() {
-  test(
-    'getCategories follows the exact cursor and deduplicates items',
-    () async {
-      final network = _CategoryNetworkRepository();
-      final repository = RemoteDatabaseImp(network);
+  test('getCategories maps the current direct-list response', () async {
+    final network = _CategoryNetworkRepository();
+    final repository = RemoteDatabaseImp(network);
 
-      final categories = await repository.getCategories();
+    final categories = await repository.getCategories();
 
-      expect(network.requests, [
-        {'limit': 100},
-        {'limit': 100, 'cursor': 'opaque/+== cursor'},
-      ]);
-      expect(network.returnFullResponseValues, everyElement(isTrue));
-      expect(categories.map((category) => category.id), ['seafood', 'produce']);
-    },
-  );
+    expect(network.requests, [<String, dynamic>{}]);
+    expect(network.returnFullResponseValues, [isFalse]);
+    expect(categories.map((category) => category.id), ['seafood', 'produce']);
+  });
 }
 
 class _CategoryNetworkRepository implements NetworkRepository {
@@ -42,30 +36,7 @@ class _CategoryNetworkRepository implements NetworkRepository {
     requests.add(Map<String, dynamic>.of(parameters));
     returnFullResponseValues.add(returnFullResponse);
 
-    if (parameters['cursor'] == null) {
-      return {
-        'data': [_category('seafood', 'Seafood')],
-        'meta': {
-          'pagination': {
-            'nextCursor': 'opaque/+== cursor',
-            'hasNextPage': true,
-            'limit': 100,
-            'totalCount': 2,
-          },
-        },
-      };
-    }
-
-    expect(parameters['cursor'], 'opaque/+== cursor');
-    return {
-      'data': [
-        _category('seafood', 'Seafood'),
-        _category('produce', 'Produce'),
-      ],
-      'meta': {
-        'pagination': {'nextCursor': null, 'hasNextPage': false, 'limit': 100},
-      },
-    };
+    return [_category('seafood', 'Seafood'), _category('produce', 'Produce')];
   }
 }
 

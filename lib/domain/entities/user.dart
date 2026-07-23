@@ -6,6 +6,8 @@ import '../../core/enums/user_status.dart';
 class User extends Equatable {
   const User({
     required this.id,
+    required this.phone,
+    required this.email,
     required this.displayName,
     required this.avatar,
     required this.locale,
@@ -14,6 +16,8 @@ class User extends Equatable {
   });
 
   final String id;
+  final String phone;
+  final String? email;
   final String displayName;
   final String? avatar;
   final String locale;
@@ -22,6 +26,8 @@ class User extends Equatable {
 
   User copyWith({
     String? id,
+    String? phone,
+    String? Function()? email,
     String? displayName,
     String? Function()? avatar,
     String? locale,
@@ -30,6 +36,8 @@ class User extends Equatable {
   }) {
     return User(
       id: id ?? this.id,
+      phone: phone ?? this.phone,
+      email: email == null ? this.email : email(),
       displayName: displayName ?? this.displayName,
       avatar: avatar == null ? this.avatar : avatar(),
       locale: locale ?? this.locale,
@@ -41,6 +49,8 @@ class User extends Equatable {
   @override
   List<Object?> get props => [
     id,
+    phone,
+    email,
     displayName,
     avatar,
     locale,

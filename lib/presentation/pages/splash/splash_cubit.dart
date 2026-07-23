@@ -28,9 +28,7 @@ class SplashCubit extends Cubit<SplashState> {
       case AuthFlowDestination.buyerHome:
         navigator.openBuyerHomeAndClearStack(const BuyerHomeInitialParams());
       case AuthFlowDestination.buyerRegistration:
-        navigator.openBuyerRegistration(
-          const BuyerRegistrationInitialParams(phoneNumber: ''),
-        );
+        navigator.openBuyerRegistration(const BuyerRegistrationInitialParams());
       case AuthFlowDestination.sellerRegistration:
         navigator.openSellerRegistration(
           const SellerRegistrationInitialParams(phoneNumber: ''),
