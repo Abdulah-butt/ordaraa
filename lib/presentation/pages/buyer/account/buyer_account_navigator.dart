@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/navigation/app_navigator.dart';
 import '../../../sheets/confirmation_sheet.dart';
+import '../../../sheets/logout_confirmation_sheet.dart';
 import '../../choose_role/choose_role_navigator.dart';
 import 'buyer_account_initial_params.dart';
 import 'buyer_account_page.dart';
@@ -11,31 +12,17 @@ import '../../common/saved_addresses/saved_addresses_initial_params.dart';
 import '../../common/saved_addresses/saved_addresses_navigator.dart';
 
 class BuyerAccountNavigator
-    with ChooseRoleRoute, OrganizationProfileRoute, SavedAddressesRoute {
+    with
+        ChooseRoleRoute,
+        OrganizationProfileRoute,
+        SavedAddressesRoute,
+        LogoutConfirmationSheetRoute {
   BuyerAccountNavigator(this.navigator);
 
   @override
   late BuildContext context;
   @override
   final AppNavigator navigator;
-
-  void showLogoutConfirmation({required VoidCallback onConfirm}) {
-    navigator.showBottomSheet(
-      context,
-      ConfirmationSheet(
-        initialParams: ConfirmationSheetInitialParams(
-          title: 'Log out?',
-          subTitle: 'Are you sure you want to log out of your account?',
-          primaryBtnText: 'Log out',
-          secondaryBtnText: 'Cancel',
-          type: ConfirmationSheetType.warning,
-          icon: Icons.logout_rounded,
-          primaryButtonIcon: Icons.logout_rounded,
-          btnAction: onConfirm,
-        ),
-      ),
-    );
-  }
 
   void showDeleteAccountConfirmation({required VoidCallback onConfirm}) {
     navigator.showBottomSheet(

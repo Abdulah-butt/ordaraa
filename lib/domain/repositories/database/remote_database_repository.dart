@@ -7,6 +7,8 @@ import '../../../network/request_model/checkout_request.dart';
 import '../../../network/request_model/order_listing_request.dart';
 import '../../../network/request_model/update_organization_profile_request.dart';
 import '../../../network/request_model/update_user_profile_request.dart';
+import '../../../network/request_model/add_address_request.dart';
+import '../../../network/request_model/update_address_request.dart';
 import '../../../core/enums/address_type.dart';
 
 import '../../entities/auth_result.dart';
@@ -53,6 +55,15 @@ abstract class RemoteDatabaseRepository {
   });
 
   Future<List<Address>> getAddresses({AddressType? type});
+
+  Future<Address> addAddress({required AddAddressRequest request});
+
+  Future<Address> updateAddress({
+    required String addressId,
+    required UpdateAddressRequest request,
+  });
+
+  Future<void> deleteAddress({required String addressId});
 
   Future<CheckoutPreview> previewCheckout({required CheckoutRequest request});
 

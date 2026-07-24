@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/alert/app_snack_bar.dart';
 import '../../../../domain/entities/market.dart';
 import '../../../../domain/stores/market_store.dart';
+import '../../../../domain/usecases/logout_use_case.dart';
+import '../../choose_role/choose_role_initial_params.dart';
 import 'application_received/application_received_initial_params.dart';
 import 'seller_registration_initial_params.dart';
 import 'seller_registration_navigator.dart';
@@ -14,11 +16,13 @@ class SellerRegistrationCubit extends Cubit<SellerRegistrationState> {
     required this.navigator,
     required this.snackBar,
     required this.marketStore,
+    required this.logoutUseCase,
   }) : super(SellerRegistrationState.initial());
 
   final SellerRegistrationNavigator navigator;
   final AppSnackBar snackBar;
   final MarketStore marketStore;
+  final LogoutUseCase logoutUseCase;
   final legalNameController = TextEditingController();
   final tradingNameController = TextEditingController();
   final abnController = TextEditingController();
@@ -49,6 +53,25 @@ class SellerRegistrationCubit extends Cubit<SellerRegistrationState> {
   void setMarket(Market? value) {
     if (value != null) {
       emit(state.copyWith(selectedMarket: () => value));
+    }
+  }
+
+  void confirmLogout() {
+    if (state.isLoggingOut) return;
+    navigator.showLogoutConfirmation(onConfirm: logout);
+  }
+
+  Future<void> logout() async {
+    if (state.isLoggingOut) return;
+    emit(state.copyWith(isLoggingOut: true));
+    try {
+      await logoutUseCase.execute();
+      if (navigator.context.mounted) {
+        navigator.openChooseRole(const ChooseRoleInitialParams());
+      }
+    } catch (error) {
+      snackBar.error(error.toString());
+      emit(state.copyWith(isLoggingOut: false));
     }
   }
 

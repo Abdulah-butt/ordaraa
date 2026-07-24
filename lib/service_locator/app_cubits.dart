@@ -22,6 +22,8 @@ import '../presentation/pages/common/personal_profile/personal_profile_cubit.dar
 import '../presentation/pages/common/personal_profile/personal_profile_navigator.dart';
 import '../presentation/pages/common/saved_addresses/saved_addresses_cubit.dart';
 import '../presentation/pages/common/saved_addresses/saved_addresses_navigator.dart';
+import '../presentation/pages/common/saved_addresses/add_address/add_address_cubit.dart';
+import '../presentation/pages/common/saved_addresses/add_address/add_address_navigator.dart';
 import '../presentation/pages/buyer/categories/buyer_categories_cubit.dart';
 import '../presentation/pages/buyer/categories/buyer_categories_navigator.dart';
 import '../presentation/pages/buyer/cart/cart_cubit.dart';
@@ -115,6 +117,7 @@ class AppCubits {
         marketStore: getIt(),
         userStore: getIt(),
         registerBuyerOrganizationUseCase: getIt(),
+        logoutUseCase: getIt(),
       ),
     );
     getIt.registerSingleton<SellerRegistrationNavigator>(
@@ -125,6 +128,7 @@ class AppCubits {
         navigator: getIt(),
         snackBar: getIt(),
         marketStore: getIt(),
+        logoutUseCase: getIt(),
       ),
     );
     getIt.registerSingleton<ApplicationReceivedNavigator>(
@@ -266,7 +270,22 @@ class AppCubits {
       SavedAddressesNavigator(getIt()),
     );
     getIt.registerSingleton<SavedAddressesCubit>(
-      SavedAddressesCubit(navigator: getIt(), getAddressesUseCase: getIt()),
+      SavedAddressesCubit(
+        navigator: getIt(),
+        getAddressesUseCase: getIt(),
+        deleteAddressUseCase: getIt(),
+        snackBar: getIt(),
+      ),
+    );
+    getIt.registerSingleton<AddAddressNavigator>(AddAddressNavigator(getIt()));
+    getIt.registerSingleton<AddAddressCubit>(
+      AddAddressCubit(
+        navigator: getIt(),
+        addAddressUseCase: getIt(),
+        updateAddressUseCase: getIt(),
+        addressLocationService: getIt(),
+        snackBar: getIt(),
+      ),
     );
   }
 }

@@ -59,6 +59,15 @@ class _BuyerRegistrationPageState extends State<BuyerRegistrationPage> {
                   CustomAppBar(
                     title: 'Business details',
                     onBack: cubit.navigator.goBack,
+                    actions: [
+                      AppBarActionButton(
+                        icon: Icons.logout_rounded,
+                        tooltip: 'Log out',
+                        onPressed: state.isLoggingOut
+                            ? null
+                            : cubit.confirmLogout,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 14),
                   Expanded(

@@ -23,9 +23,7 @@ class BuyerAccountProfileCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: context.isDarkMode
-            ? context.colorTheme.primaryContainer
-            : AppColors.brand50,
+        color:context.colorTheme.primary,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -65,13 +63,14 @@ class BuyerAccountProfileCard extends StatelessWidget {
                       fontSize: 15,
                       height: 22 / 15,
                       fontWeight: FontWeight.w700,
+                      color: context.colorTheme.onPrimary
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     businessSubtitle,
                     style: context.textTheme.labelSmall?.copyWith(
-                      color: context.colorTheme.onSurfaceVariant,
+                      color: context.colorTheme.onPrimary,
                       height: 18 / 11,
                     ),
                   ),

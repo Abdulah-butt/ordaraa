@@ -23,6 +23,8 @@ import '../../../network/request_model/checkout_request.dart';
 import '../../../network/request_model/order_listing_request.dart';
 import '../../../network/request_model/update_organization_profile_request.dart';
 import '../../../network/request_model/update_user_profile_request.dart';
+import '../../../network/request_model/add_address_request.dart';
+import '../../../network/request_model/update_address_request.dart';
 import '../../models/auth_result_json.dart';
 import '../../models/category_json.dart';
 import '../../models/market_json.dart';
@@ -182,6 +184,37 @@ class RemoteDatabaseImp implements RemoteDatabaseRepository {
       parameters: {if (type != null) 'type': type.apiValue},
     );
     return _deduplicateById(addresses, (address) => address.id);
+  }
+
+  @override
+  Future<Address> addAddress({required AddAddressRequest request}) async {
+    final response = await _networkRepository.sendRequest(
+      APIEndpoint.organizationAddresses,
+      mode: NetworkRequestMode.post,
+      body: request.toJson(),
+    );
+    return AddressJson.fromJson(response as Map<String, dynamic>).toDomain();
+  }
+
+  @override
+  Future<Address> updateAddress({
+    required String addressId,
+    required UpdateAddressRequest request,
+  }) async {
+    final response = await _networkRepository.sendRequest(
+      APIEndpoint.organizationAddressById(addressId),
+      mode: NetworkRequestMode.patch,
+      body: request.toJson(),
+    );
+    return AddressJson.fromJson(response as Map<String, dynamic>).toDomain();
+  }
+
+  @override
+  Future<void> deleteAddress({required String addressId}) async {
+    await _networkRepository.sendRequest(
+      APIEndpoint.organizationAddressById(addressId),
+      mode: NetworkRequestMode.delete,
+    );
   }
 
   Future<List<TDomain>> _getAllCursorPages<TJson, TDomain>({

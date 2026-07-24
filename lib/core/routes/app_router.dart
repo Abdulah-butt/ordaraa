@@ -25,6 +25,8 @@ import '../../presentation/pages/common/personal_profile/personal_profile_initia
 import '../../presentation/pages/common/personal_profile/personal_profile_page.dart';
 import '../../presentation/pages/common/saved_addresses/saved_addresses_initial_params.dart';
 import '../../presentation/pages/common/saved_addresses/saved_addresses_page.dart';
+import '../../presentation/pages/common/saved_addresses/add_address/add_address_initial_params.dart';
+import '../../presentation/pages/common/saved_addresses/add_address/add_address_page.dart';
 import '../../presentation/pages/buyer/bottom_navigation/buyer_bottom_navigation.dart';
 import '../../presentation/pages/buyer/categories/buyer_categories_initial_params.dart';
 import '../../presentation/pages/buyer/categories/buyer_categories_page.dart';
@@ -241,6 +243,20 @@ class AppRouter {
             child: SavedAddressesPage(
               cubit: getIt(),
               initialParams: SavedAddressesInitialParams.fromMap(
+                state.uri.queryParameters,
+              ),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AddAddressPage.path,
+        pageBuilder: (context, state) {
+          return AppRouteTransition.build(
+            state: state,
+            child: AddAddressPage(
+              cubit: getIt(),
+              initialParams: AddAddressInitialParams.fromMap(
                 state.uri.queryParameters,
               ),
             ),

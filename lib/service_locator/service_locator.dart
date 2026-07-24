@@ -11,6 +11,9 @@ import '../domain/stores/category_store.dart';
 import '../domain/stores/cart_store.dart';
 import '../domain/stores/market_store.dart';
 import '../domain/usecases/add_to_cart_use_case.dart';
+import '../domain/usecases/add_address_use_case.dart';
+import '../domain/usecases/update_address_use_case.dart';
+import '../domain/usecases/delete_address_use_case.dart';
 import '../domain/usecases/get_addresses_use_case.dart';
 import '../domain/usecases/get_order_by_id_use_case.dart';
 import '../domain/usecases/get_orders_use_case.dart';
@@ -127,6 +130,13 @@ class ServiceLocator {
     );
     getIt.registerSingleton<AddToCartUseCase>(AddToCartUseCase(getIt()));
     getIt.registerSingleton<GetAddressesUseCase>(GetAddressesUseCase(getIt()));
+    getIt.registerSingleton<AddAddressUseCase>(AddAddressUseCase(getIt()));
+    getIt.registerSingleton<UpdateAddressUseCase>(
+      UpdateAddressUseCase(getIt()),
+    );
+    getIt.registerSingleton<DeleteAddressUseCase>(
+      DeleteAddressUseCase(getIt()),
+    );
     getIt.registerSingleton<GetOrdersUseCase>(GetOrdersUseCase(getIt()));
     getIt.registerSingleton<PreviewCheckoutUseCase>(
       PreviewCheckoutUseCase(getIt()),

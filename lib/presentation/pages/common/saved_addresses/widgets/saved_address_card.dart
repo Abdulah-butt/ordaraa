@@ -8,9 +8,18 @@ import '../../../../../core/theme/app_spacing.dart';
 import '../../../../../domain/entities/address.dart';
 
 class SavedAddressCard extends StatelessWidget {
-  const SavedAddressCard({super.key, required this.address});
+  const SavedAddressCard({
+    super.key,
+    required this.address,
+    required this.onEdit,
+    required this.onDelete,
+    this.deleting = false,
+  });
 
   final Address address;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final bool deleting;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +81,12 @@ class SavedAddressCard extends StatelessWidget {
                           ),
                         ),
                       ),
+                    const SizedBox(width: AppSpacing.xs),
+                    _AddressMenu(
+                      deleting: deleting,
+                      onEdit: onEdit,
+                      onDelete: onDelete,
+                    ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.xs),
@@ -116,4 +131,73 @@ class SavedAddressCard extends StatelessWidget {
     AddressType.delivery => Icons.local_shipping_outlined,
     AddressType.other => Icons.location_on_outlined,
   };
+}
+
+enum _AddressMenuAction { edit, delete }
+
+class _AddressMenu extends StatelessWidget {
+  const _AddressMenu({
+    required this.deleting,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final bool deleting;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    if (deleting) {
+      return const SizedBox(
+        width: 34,
+        height: 34,
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+    return PopupMenuButton<_AddressMenuAction>(
+      tooltip: 'Address actions',
+      padding: EdgeInsets.zero,
+      icon: const Icon(Icons.more_vert_rounded, size: 21),
+      onSelected: (action) {
+        switch (action) {
+          case _AddressMenuAction.edit:
+            onEdit();
+            return;
+          case _AddressMenuAction.delete:
+            onDelete();
+            return;
+        }
+      },
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: _AddressMenuAction.edit,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            leading: Icon(Icons.edit_outlined),
+            title: Text('Edit address'),
+          ),
+        ),
+        PopupMenuItem(
+          value: _AddressMenuAction.delete,
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            leading: Icon(
+              Icons.delete_outline_rounded,
+              color: context.colorTheme.error,
+            ),
+            title: Text(
+              'Delete address',
+              style: TextStyle(color: context.colorTheme.error),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

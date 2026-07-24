@@ -12,6 +12,8 @@ class APIEndpoint {
   static const String createSellerApplication = '/api/v1/seller-applications';
   static const String currentOrganization = '/api/v1/organizations/current';
   static const String organizationAddresses = '$currentOrganization/addresses';
+  static String organizationAddressById(String id) =>
+      '$organizationAddresses/$id';
   static const String checkoutPreview = '$currentOrganization/checkout/preview';
   static const String orders = '$currentOrganization/orders';
   static String orderById(String id) => '$orders/$id';

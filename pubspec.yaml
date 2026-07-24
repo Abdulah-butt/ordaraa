@@ -78,6 +78,7 @@ dependencies:
 
   phone_form_field: ^10.0.18
   pinput: ^6.0.2
+  location_picker_plus: ^3.1.0
 
 
 

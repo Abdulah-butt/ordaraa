@@ -6,6 +6,8 @@ import '../services/permission/permission_service.dart';
 import '../services/secure_storage/flutter_secure_storage_service.dart';
 import '../services/secure_storage/secure_storage_service.dart';
 import '../services/upgrader/upgrader_service.dart';
+import '../services/address_location/address_location_service.dart';
+import '../services/address_location/location_picker_address_location_service.dart';
 import 'service_locator.dart';
 
 class AppServices {
@@ -14,6 +16,9 @@ class AppServices {
       FlutterSecureStorageService(),
     );
     getIt.registerSingleton<PermissionService>(PermissionHandler());
+    getIt.registerSingleton<AddressLocationService>(
+      const LocationPickerAddressLocationService(),
+    );
     getIt.registerSingleton<RemoteNotificationService>(
       OneSignalNotificationService(permissionService: getIt())..initialize(),
     );

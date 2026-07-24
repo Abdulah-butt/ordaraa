@@ -7,6 +7,8 @@ import '../../../../domain/entities/market.dart';
 import '../../../../domain/stores/market_store.dart';
 import '../../../../domain/stores/user_store.dart';
 import '../../../../domain/usecases/register_buyer_organization_use_case.dart';
+import '../../../../domain/usecases/logout_use_case.dart';
+import '../../choose_role/choose_role_initial_params.dart';
 import '../../../../network/request_model/organization_registration_request.dart';
 import '../../../../network/request_model/registration_address_request.dart';
 import 'buyer_registration_initial_params.dart';
@@ -21,6 +23,7 @@ class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
     required this.marketStore,
     required this.userStore,
     required this.registerBuyerOrganizationUseCase,
+    required this.logoutUseCase,
   }) : super(BuyerRegistrationState.initial());
 
   final BuyerRegistrationNavigator navigator;
@@ -28,6 +31,7 @@ class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
   final MarketStore marketStore;
   final UserStore userStore;
   final RegisterBuyerOrganizationUseCase registerBuyerOrganizationUseCase;
+  final LogoutUseCase logoutUseCase;
   final businessNameController = TextEditingController();
   final addressLine1Controller = TextEditingController();
   final cityController = TextEditingController();
@@ -56,6 +60,25 @@ class BuyerRegistrationCubit extends Cubit<BuyerRegistrationState> {
   void setMarket(Market? value) {
     if (value != null) {
       emit(state.copyWith(selectedMarket: () => value));
+    }
+  }
+
+  void confirmLogout() {
+    if (state.isLoggingOut) return;
+    navigator.showLogoutConfirmation(onConfirm: logout);
+  }
+
+  Future<void> logout() async {
+    if (state.isLoggingOut) return;
+    emit(state.copyWith(isLoggingOut: true));
+    try {
+      await logoutUseCase.execute();
+      if (navigator.context.mounted) {
+        navigator.openChooseRole(const ChooseRoleInitialParams());
+      }
+    } catch (error) {
+      snackBar.error(error.toString());
+      emit(state.copyWith(isLoggingOut: false));
     }
   }
 

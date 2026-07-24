@@ -61,6 +61,33 @@ class _SavedAddressesPageState extends State<SavedAddressesPage> {
                     child: _content(context, state),
                   ),
                 ),
+                SafeArea(
+                  top: false,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                      AppSpacing.lg,
+                      AppSpacing.md,
+                    ),
+                    decoration: BoxDecoration(
+                      color: context.colorTheme.surface,
+                      border: Border(
+                        top: BorderSide(
+                          color: context.colorTheme.outlineVariant,
+                        ),
+                      ),
+                    ),
+                    child: CustomButton(
+                      text: 'Add new address',
+                      onTap: cubit.openAddAddress,
+                      leadingIcon: const Icon(
+                        Icons.add_location_alt_outlined,
+                        size: 19,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -147,7 +174,13 @@ class _SavedAddressesPageState extends State<SavedAddressesPage> {
       itemCount: state.addresses.length,
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
       itemBuilder: (context, index) {
-        return SavedAddressCard(address: state.addresses[index]);
+        final address = state.addresses[index];
+        return SavedAddressCard(
+          address: address,
+          deleting: state.deletingAddressId == address.id,
+          onEdit: () => cubit.editAddress(address),
+          onDelete: () => cubit.confirmDeleteAddress(address),
+        );
       },
     );
   }

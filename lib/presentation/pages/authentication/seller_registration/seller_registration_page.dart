@@ -68,6 +68,15 @@ class _SellerRegistrationPageState extends State<SellerRegistrationPage> {
                     trailing: RegistrationStepProgress(
                       activeStep: verification ? 4 : 3,
                     ),
+                    actions: [
+                      AppBarActionButton(
+                        icon: Icons.logout_rounded,
+                        tooltip: 'Log out',
+                        onPressed: state.isLoggingOut
+                            ? null
+                            : cubit.confirmLogout,
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 28),
                   Expanded(

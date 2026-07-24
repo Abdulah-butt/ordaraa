@@ -9,6 +9,7 @@ class SellerRegistrationState {
     required this.loadingMarkets,
     required this.authorised,
     required this.documentUploaded,
+    required this.isLoggingOut,
   });
 
   final SellerRegistrationStep step;
@@ -16,6 +17,7 @@ class SellerRegistrationState {
   final bool loadingMarkets;
   final bool authorised;
   final bool documentUploaded;
+  final bool isLoggingOut;
 
   factory SellerRegistrationState.initial() {
     return const SellerRegistrationState(
@@ -24,6 +26,7 @@ class SellerRegistrationState {
       loadingMarkets: false,
       authorised: false,
       documentUploaded: false,
+      isLoggingOut: false,
     );
   }
 
@@ -33,6 +36,7 @@ class SellerRegistrationState {
     bool? loadingMarkets,
     bool? authorised,
     bool? documentUploaded,
+    bool? isLoggingOut,
   }) {
     return SellerRegistrationState(
       step: step ?? this.step,
@@ -42,6 +46,7 @@ class SellerRegistrationState {
       loadingMarkets: loadingMarkets ?? this.loadingMarkets,
       authorised: authorised ?? this.authorised,
       documentUploaded: documentUploaded ?? this.documentUploaded,
+      isLoggingOut: isLoggingOut ?? this.isLoggingOut,
     );
   }
 }

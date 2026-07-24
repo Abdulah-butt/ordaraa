@@ -121,3 +121,46 @@ class _BackButton extends StatelessWidget {
     );
   }
 }
+
+class AppBarActionButton extends StatelessWidget {
+  const AppBarActionButton({
+    super.key,
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: context.colorTheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            width: CustomAppBar.controlSize,
+            height: CustomAppBar.controlSize,
+            decoration: BoxDecoration(
+              border: Border.all(color: context.colorTheme.outline),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon,
+              size: 19,
+              color: onPressed == null
+                  ? context.ordaraColors.textDisabled
+                  : context.colorTheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

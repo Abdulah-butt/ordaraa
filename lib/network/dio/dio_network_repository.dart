@@ -23,8 +23,8 @@ class DioNetworkRepository implements NetworkRepository {
   DioNetworkRepository(
     this._secureStorageService,
     this._localDatabaseRepository, {
-    Future<void> Function()? onSessionExpired,
-  }) : _onSessionExpired = onSessionExpired {
+    this._onSessionExpired,
+  }) {
     _initialize();
   }
 

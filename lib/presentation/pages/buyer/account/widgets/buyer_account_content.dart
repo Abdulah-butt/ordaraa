@@ -31,26 +31,13 @@ class BuyerAccountContent extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 18, 16, 12),
             sliver: SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Account',
-                    style: context.textTheme.headlineSmall?.copyWith(
-                      fontSize: 22,
-                      height: 29 / 22,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    state.organizationName,
-                    style: context.textTheme.labelSmall?.copyWith(
-                      color: context.colorTheme.onSurfaceVariant,
-                      height: 18 / 11,
-                    ),
-                  ),
-                ],
+              child: Text(
+                'Account',
+                style: context.textTheme.headlineSmall?.copyWith(
+                  fontSize: 22,
+                  height: 29 / 22,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),

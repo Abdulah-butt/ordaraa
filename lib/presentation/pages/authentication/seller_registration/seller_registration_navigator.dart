@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/navigation/app_navigator.dart';
 import 'application_received/application_received_navigator.dart';
+import '../../choose_role/choose_role_navigator.dart';
+import '../../../sheets/logout_confirmation_sheet.dart';
 import 'seller_registration_initial_params.dart';
 import 'seller_registration_page.dart';
 
-class SellerRegistrationNavigator with ApplicationReceivedRoute {
+class SellerRegistrationNavigator
+    with
+        ApplicationReceivedRoute,
+        ChooseRoleRoute,
+        LogoutConfirmationSheetRoute {
   SellerRegistrationNavigator(this.navigator);
 
   @override

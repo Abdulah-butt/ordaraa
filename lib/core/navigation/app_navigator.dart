@@ -68,6 +68,12 @@ class AppNavigator {
     }
   }
 
+  void popWithResult<T extends Object?>(BuildContext context, T result) {
+    if (context.canPop()) {
+      context.pop<T>(result);
+    }
+  }
+
   Future<T?> showDialogBox<T>(BuildContext context, Widget page) {
     return showDialog<T>(
       context: context,

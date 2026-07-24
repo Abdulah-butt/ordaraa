@@ -7,6 +7,8 @@ import 'package:ordaraa/network/file_field.dart';
 import 'package:ordaraa/network/network_repository.dart';
 import 'package:ordaraa/network/request_model/checkout_item_request.dart';
 import 'package:ordaraa/network/request_model/checkout_request.dart';
+import 'package:ordaraa/network/request_model/add_address_request.dart';
+import 'package:ordaraa/network/request_model/update_address_request.dart';
 
 void main() {
   late _CheckoutNetworkRepository network;
@@ -30,6 +32,63 @@ void main() {
       expect(addresses.single.line1, '24 Harbour Street');
     },
   );
+
+  test('addAddress posts the backend request and maps its response', () async {
+    const request = AddAddressRequest(
+      type: AddressType.warehouse,
+      label: 'Main warehouse',
+      contactName: 'Maya Chen',
+      contactPhone: '+61412345678',
+      line1: '24 Harbour Street',
+      city: 'Sydney',
+      state: 'NSW',
+      postalCode: '2000',
+      countryCode: 'AU',
+      isDefault: true,
+    );
+
+    final address = await repository.addAddress(request: request);
+
+    expect(network.endpoint, APIEndpoint.organizationAddresses);
+    expect(network.mode, NetworkRequestMode.post);
+    expect(network.body, request.toJson());
+    expect(network.body, isNot(contains('latitude')));
+    expect(network.body, isNot(contains('longitude')));
+    expect(address.id, 'address-id');
+  });
+
+  test(
+    'updateAddress patches the selected address and maps response',
+    () async {
+      const request = UpdateAddressRequest(
+        type: AddressType.delivery,
+        line1: '25 Harbour Street',
+        city: 'Sydney',
+        countryCode: 'AU',
+        isDefault: true,
+      );
+
+      final address = await repository.updateAddress(
+        addressId: 'address-id',
+        request: request,
+      );
+
+      expect(
+        network.endpoint,
+        APIEndpoint.organizationAddressById('address-id'),
+      );
+      expect(network.mode, NetworkRequestMode.patch);
+      expect(network.body, request.toJson());
+      expect(address.id, 'address-id');
+    },
+  );
+
+  test('deleteAddress deletes only the selected address', () async {
+    await repository.deleteAddress(addressId: 'address-id');
+
+    expect(network.endpoint, APIEndpoint.organizationAddressById('address-id'));
+    expect(network.mode, NetworkRequestMode.delete);
+  });
 
   test('previewCheckout sends cart and maps authoritative totals', () async {
     final preview = await repository.previewCheckout(request: _request);
@@ -99,6 +158,18 @@ class _CheckoutNetworkRepository implements NetworkRepository {
     this.headers = headers;
     this.body = body;
     this.returnFullResponse = returnFullResponse;
+    if (endpoint == APIEndpoint.organizationAddresses &&
+        mode == NetworkRequestMode.post) {
+      return _address;
+    }
+    if (endpoint == APIEndpoint.organizationAddressById('address-id') &&
+        mode == NetworkRequestMode.patch) {
+      return _address;
+    }
+    if (endpoint == APIEndpoint.organizationAddressById('address-id') &&
+        mode == NetworkRequestMode.delete) {
+      return <String, dynamic>{};
+    }
     if (endpoint == APIEndpoint.organizationAddresses) {
       return {
         'data': [_address],
